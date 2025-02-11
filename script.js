@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function() {
 // Check if user is already logged in
 document.addEventListener("DOMContentLoaded", async function() {
     try {
-        const user = await Auth.currentAuthenticatedUser();
+        const user = await Amplify.Auth.currentAuthenticatedUser();
         console.log("User is already logged in:", user);
         isLoggedIn = true;
         loginBox.style.display = "none";
@@ -64,7 +64,7 @@ async function checkLogin() {
     const password = passwordInput.value.trim();
 
     try {
-        const user = await Auth.signIn(username, password);
+        const user = await Amplify.Auth.signIn(username, password);
         console.log("Login successful:", user);
         isLoggedIn = true;
         loginBox.style.display = "none";
@@ -89,7 +89,7 @@ async function createAccount() {
     }
 
     try {
-        const newUser = await Auth.signUp({
+        const newUser = await Amplify.Auth.signUp({
             username,
             password,
             attributes: { email }
@@ -104,7 +104,7 @@ async function createAccount() {
 async function logout() {
     console.log("Logout button clicked");
     try {
-        await Auth.signOut();
+        await Amplify.Auth.signOut();
         alert("You have been logged out.");
         window.location.reload();
     } catch (error) {
