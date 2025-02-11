@@ -6,6 +6,10 @@ const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
 const usernameInput = document.getElementById('username');
 const passwordInput = document.getElementById('password');
+const createAccountBtn = document.createElement('button');
+createAccountBtn.textContent = "Create Account";
+createAccountBtn.id = "create-account-btn";
+loginBox.appendChild(createAccountBtn);
 
 let isLoggedIn = false; // Track login status
 
@@ -59,6 +63,23 @@ async function checkLogin() {
     }
 }
 
+async function createAccount() {
+    const username = prompt("Enter a new username:");
+    const password = prompt("Enter a new password:");
+
+    try {
+        const newUser = await aws_amplify.Auth.signUp({
+            username,
+            password,
+            attributes: { email: prompt("Enter your email:") }
+        });
+        alert("Account created successfully! Please log in.");
+    } catch (error) {
+        console.error("Sign-up error:", error);
+        alert("Error creating account. Please try again.");
+    }
+}
+
 async function logout() {
     try {
         await aws_amplify.Auth.signOut();
@@ -71,6 +92,7 @@ async function logout() {
 
 logoutBtn.addEventListener('click', logout);
 loginBtn.addEventListener('click', checkLogin);
+createAccountBtn.addEventListener('click', createAccount);
 
 // Function to display login as a pop-up modal
 function showLoginPopup() {
@@ -119,4 +141,3 @@ async function sendMessage() {
 }
 
 sendBtn.addEventListener('click', sendMessage);
-
