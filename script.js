@@ -6,10 +6,6 @@ const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
 const usernameInput = document.getElementById('username');
 const passwordInput = document.getElementById('password');
-const createAccountBtn = document.createElement('button');
-createAccountBtn.textContent = "Create Account";
-createAccountBtn.id = "create-account-btn";
-loginBox.appendChild(createAccountBtn);
 
 let isLoggedIn = false; // Track login status
 
@@ -96,9 +92,11 @@ async function logout() {
     }
 }
 
-logoutBtn.addEventListener('click', logout);
-loginBtn.addEventListener('click', checkLogin);
-createAccountBtn.addEventListener('click', createAccount);
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById('login-btn').addEventListener('click', checkLogin);
+    document.getElementById('create-account-btn').addEventListener('click', createAccount);
+    document.getElementById('logout-btn').addEventListener('click', logout);
+});
 
 // Function to display login as a pop-up modal
 function showLoginPopup() {
