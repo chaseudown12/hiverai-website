@@ -1,3 +1,6 @@
+import { Amplify } from "https://cdn.jsdelivr.net/npm/aws-amplify@5.0.4/dist/aws-amplify.min.js";
+import { Auth } from "https://cdn.jsdelivr.net/npm/aws-amplify@5.0.4/dist/aws-amplify-auth.min.js";
+
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 const chatOutput = document.getElementById('chat-output');
@@ -12,16 +15,18 @@ userInput.disabled = true;
 sendBtn.disabled = true;
 
 // AWS Amplify Configuration for Cognito
-aws_amplify.Auth.configure({
-    region: "us-east-2",
-    userPoolId: "us-east-2_NmT23WGSq",
-    userPoolWebClientId: "12dlehhrp9ntutsfstsao0tuik",
-    oauth: {
-        domain: "us-east-2nmt23wgsq.auth.us-east-2.amazoncognito.com",
-        scope: ["openid"],
-        redirectSignIn: "https://www.hiverai.com",
-        redirectSignOut: "https://www.hiverai.com",
-        responseType: "token"
+Amplify.configure({
+    Auth: {
+        region: "us-east-2",
+        userPoolId: "us-east-2_NmT23WGSq",
+        userPoolWebClientId: "12dlehhrp9ntutsfstsao0tuik",
+        oauth: {
+            domain: "us-east-2nmt23wgsq.auth.us-east-2.amazoncognito.com",
+            scope: ["openid"],
+            redirectSignIn: "https://www.hiverai.com",
+            redirectSignOut: "https://www.hiverai.com",
+            responseType: "token"
+        }
     }
 });
 
@@ -41,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function() {
 // Check if user is already logged in
 document.addEventListener("DOMContentLoaded", async function() {
     try {
-        const user = await aws_amplify.Auth.currentAuthenticatedUser();
+        const user = await Auth.currentAuthenticatedUser();
         console.log("User is already logged in:", user);
         isLoggedIn = true;
         loginBox.style.display = "none";
@@ -58,7 +63,7 @@ async function checkLogin() {
     const password = passwordInput.value.trim();
 
     try {
-        const user = await aws_amplify.Auth.signIn(username, password);
+        const user = await Auth.signIn(username, password);
         console.log("Login successful:", user);
         isLoggedIn = true;
         loginBox.style.display = "none";
@@ -83,7 +88,7 @@ async function createAccount() {
     }
 
     try {
-        const newUser = await aws_amplify.Auth.signUp({
+        const newUser = await Auth.signUp({
             username,
             password,
             attributes: { email }
@@ -98,7 +103,7 @@ async function createAccount() {
 async function logout() {
     console.log("Logout button clicked");
     try {
-        await aws_amplify.Auth.signOut();
+        await Auth.signOut();
         alert("You have been logged out.");
         window.location.reload();
     } catch (error) {
