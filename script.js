@@ -66,17 +66,23 @@ async function checkLogin() {
 async function createAccount() {
     const username = prompt("Enter a new username:");
     const password = prompt("Enter a new password:");
+    const email = prompt("Enter your email:");
+
+    if (!username || !password || !email) {
+        alert("All fields are required to create an account.");
+        return;
+    }
 
     try {
         const newUser = await aws_amplify.Auth.signUp({
             username,
             password,
-            attributes: { email: prompt("Enter your email:") }
+            attributes: { email }
         });
-        alert("Account created successfully! Please log in.");
+        alert("Account created successfully! Please check your email for verification and then log in.");
     } catch (error) {
         console.error("Sign-up error:", error);
-        alert("Error creating account. Please try again.");
+        alert("Error creating account: " + error.message);
     }
 }
 
