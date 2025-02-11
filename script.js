@@ -1,4 +1,3 @@
-const apiKey = "YOUR_OPENAI_API_KEY";
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 const chatOutput = document.getElementById('chat-output');
@@ -12,6 +11,27 @@ let isLoggedIn = false; // Track login status
 // Disable chat input until login
 userInput.disabled = true;
 sendBtn.disabled = true;
+
+// Apply spacing between login elements
+document.addEventListener("DOMContentLoaded", function() {
+  usernameInput.style.marginBottom = "20px";
+  passwordInput.style.marginBottom = "20px";
+  loginBtn.style.marginTop = "20px";
+});
+
+// Configure AWS Amplify with Cognito
+aws_amplify.Auth.configure({
+    region: "us-east-2",
+    userPoolId: "us-east-2_NmT23WGSq",
+    userPoolWebClientId: "12dlehhrp9ntutsfstsao0tuik",
+    oauth: {
+        domain: "us-east-2nmt23wgsq.auth.us-east-2.amazoncognito.com",
+        scope: ["openid"],
+        redirectSignIn: "https://www.hiverai.com",
+        redirectSignOut: "https://www.hiverai.com",
+        responseType: "token"
+    }
+});
 
 function addMessage(text, sender = "user") {
   const p = document.createElement('p');
@@ -46,27 +66,21 @@ function sendMessage() {
   addMessage(message, "user");
   userInput.value = "";
 
-  const endpoint = "https://api.openai.com/v1/completions";
-  const headers = {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${apiKey}`
-  };
+  const endpoint = "YOUR_LAMBDA_API_GATEWAY_URL"; // Replace with your actual API Gateway URL
+
   const body = {
-    model: "text-davinci-003",
-    prompt: message,
-    max_tokens: 100,
-    temperature: 0.7
+    prompt: message
   };
 
   try {
     fetch(endpoint, {
       method: "POST",
-      headers: headers,
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
     })
     .then(response => response.json())
     .then(data => {
-      let aiText = data.choices && data.choices.length > 0 ? data.choices[0].text.trim() : "(No response from AI)";
+      let aiText = data.trim() || "(No response from AI)";
       typeWriterEffect(aiText, () => speakText(aiText));
     })
     .catch(error => {
