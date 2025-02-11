@@ -11,25 +11,31 @@ let isLoggedIn = false; // Track login status
 userInput.disabled = true;
 sendBtn.disabled = true;
 
-// AWS Amplify Configuration for Cognito
-if (window.Amplify) {
-    Amplify.configure({
-        Auth: {
-            region: "us-east-2",
-            userPoolId: "us-east-2_NmT23WGSq",
-            userPoolWebClientId: "12dlehhrp9ntutsfstsao0tuik",
-            oauth: {
-                domain: "us-east-2nmt23wgsq.auth.us-east-2.amazoncognito.com",
-                scope: ["openid"],
-                redirectSignIn: "https://www.hiverai.com",
-                redirectSignOut: "https://www.hiverai.com",
-                responseType: "token"
+// Ensure AWS Amplify is fully loaded before running authentication
+function checkAmplifyLoad() {
+    if (typeof Amplify === "undefined") {
+        console.error("AWS Amplify is not loaded. Retrying in 2 seconds...");
+        setTimeout(() => window.location.reload(), 2000);
+    } else {
+        console.log("AWS Amplify Loaded Successfully");
+        Amplify.configure({
+            Auth: {
+                region: "us-east-2",
+                userPoolId: "us-east-2_NmT23WGSq",
+                userPoolWebClientId: "12dlehhrp9ntutsfstsao0tuik",
+                oauth: {
+                    domain: "us-east-2nmt23wgsq.auth.us-east-2.amazoncognito.com",
+                    scope: ["openid"],
+                    redirectSignIn: "https://www.hiverai.com",
+                    redirectSignOut: "https://www.hiverai.com",
+                    responseType: "token"
+                }
             }
-        }
-    });
-} else {
-    console.error("AWS Amplify is not loaded.");
+        });
+    }
 }
+
+document.addEventListener("DOMContentLoaded", checkAmplifyLoad);
 
 // Ensure buttons exist before adding event listeners
 document.addEventListener("DOMContentLoaded", function() {
@@ -41,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (createAccountBtn) createAccountBtn.addEventListener('click', createAccount);
     if (logoutBtn) logoutBtn.addEventListener('click', logout);
     
-    console.log("Event listeners attached successfully - Mk-4");
+    console.log("Event listeners attached successfully - Mk-5");
 });
 
 // Check if user is already logged in
