@@ -1,6 +1,3 @@
-import { Amplify } from "https://cdn.jsdelivr.net/npm/aws-amplify@5.0.4/dist/aws-amplify.min.js";
-import { Auth } from "https://cdn.jsdelivr.net/npm/aws-amplify@5.0.4/dist/aws-amplify-auth.min.js";
-
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 const chatOutput = document.getElementById('chat-output');
@@ -15,20 +12,24 @@ userInput.disabled = true;
 sendBtn.disabled = true;
 
 // AWS Amplify Configuration for Cognito
-Amplify.configure({
-    Auth: {
-        region: "us-east-2",
-        userPoolId: "us-east-2_NmT23WGSq",
-        userPoolWebClientId: "12dlehhrp9ntutsfstsao0tuik",
-        oauth: {
-            domain: "us-east-2nmt23wgsq.auth.us-east-2.amazoncognito.com",
-            scope: ["openid"],
-            redirectSignIn: "https://www.hiverai.com",
-            redirectSignOut: "https://www.hiverai.com",
-            responseType: "token"
+if (window.Amplify) {
+    Amplify.configure({
+        Auth: {
+            region: "us-east-2",
+            userPoolId: "us-east-2_NmT23WGSq",
+            userPoolWebClientId: "12dlehhrp9ntutsfstsao0tuik",
+            oauth: {
+                domain: "us-east-2nmt23wgsq.auth.us-east-2.amazoncognito.com",
+                scope: ["openid"],
+                redirectSignIn: "https://www.hiverai.com",
+                redirectSignOut: "https://www.hiverai.com",
+                responseType: "token"
+            }
         }
-    }
-});
+    });
+} else {
+    console.error("AWS Amplify is not loaded.");
+}
 
 // Ensure buttons exist before adding event listeners
 document.addEventListener("DOMContentLoaded", function() {
@@ -40,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (createAccountBtn) createAccountBtn.addEventListener('click', createAccount);
     if (logoutBtn) logoutBtn.addEventListener('click', logout);
     
-    console.log("Event listeners attached successfully");
+    console.log("Event listeners attached successfully - Mk-4");
 });
 
 // Check if user is already logged in
