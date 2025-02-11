@@ -119,3 +119,4 @@ async function sendMessage() {
 }
 
 sendBtn.addEventListener('click', sendMessage);
+
