@@ -72,6 +72,22 @@ async function logout() {
 logoutBtn.addEventListener('click', logout);
 loginBtn.addEventListener('click', checkLogin);
 
+// Function to display login as a pop-up modal
+function showLoginPopup() {
+    loginBox.style.position = "fixed";
+    loginBox.style.top = "50%";
+    loginBox.style.left = "50%";
+    loginBox.style.transform = "translate(-50%, -50%)";
+    loginBox.style.background = "#ffffffcc";
+    loginBox.style.padding = "20px";
+    loginBox.style.border = "1px solid #ccc";
+    loginBox.style.borderRadius = "8px";
+    loginBox.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+    loginBox.style.display = "block";
+}
+
+document.addEventListener("DOMContentLoaded", showLoginPopup);
+
 async function sendMessage() {
     if (!isLoggedIn) {
         alert("Please log in before using the chat.");
