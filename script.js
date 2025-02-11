@@ -2,8 +2,6 @@ const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 const chatOutput = document.getElementById('chat-output');
 const loginBox = document.querySelector('.login-box');
-const loginBtn = document.getElementById('login-btn');
-const logoutBtn = document.getElementById('logout-btn');
 const usernameInput = document.getElementById('username');
 const passwordInput = document.getElementById('password');
 
@@ -27,6 +25,19 @@ aws_amplify.Auth.configure({
     }
 });
 
+// Ensure buttons exist before adding event listeners
+document.addEventListener("DOMContentLoaded", function() {
+    const loginBtn = document.getElementById('login-btn');
+    const createAccountBtn = document.getElementById('create-account-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    if (loginBtn) loginBtn.addEventListener('click', checkLogin);
+    if (createAccountBtn) createAccountBtn.addEventListener('click', createAccount);
+    if (logoutBtn) logoutBtn.addEventListener('click', logout);
+    
+    console.log("Event listeners attached successfully");
+});
+
 // Check if user is already logged in
 document.addEventListener("DOMContentLoaded", async function() {
     try {
@@ -42,6 +53,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 });
 
 async function checkLogin() {
+    console.log("Login button clicked");
     const username = usernameInput.value.trim();
     const password = passwordInput.value.trim();
 
@@ -60,6 +72,7 @@ async function checkLogin() {
 }
 
 async function createAccount() {
+    console.log("Create Account button clicked");
     const username = prompt("Enter a new username:");
     const password = prompt("Enter a new password:");
     const email = prompt("Enter your email:");
@@ -83,6 +96,7 @@ async function createAccount() {
 }
 
 async function logout() {
+    console.log("Logout button clicked");
     try {
         await aws_amplify.Auth.signOut();
         alert("You have been logged out.");
@@ -91,12 +105,6 @@ async function logout() {
         console.error("Logout error:", error);
     }
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById('login-btn').addEventListener('click', checkLogin);
-    document.getElementById('create-account-btn').addEventListener('click', createAccount);
-    document.getElementById('logout-btn').addEventListener('click', logout);
-});
 
 // Function to display login as a pop-up modal
 function showLoginPopup() {
