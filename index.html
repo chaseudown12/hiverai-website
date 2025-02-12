@@ -15,8 +15,8 @@
 
     <script>
         document.getElementById("login-button").addEventListener("click", function () {
-            // Redirect to Cognito Hosted UI login page with the correct domain and client ID
-            window.location.href = "https://us-east-2ikbsa6jcg.auth.us-east-2.amazoncognito.com/login?client_id=5mau62v6fu7ir4ealb8j4tmpld&response_type=code&scope=openid+email+profile&redirect_uri=https://www.hiverai.com/login-success";
+            // Use the correct Cognito OAuth2 login URL format
+            window.location.href = "https://us-east-2ikbsa6jcg.auth.us-east-1.amazoncognito.com/oauth2/authorize?client_id=5mau62v6fu7ir4ealb8j4tmpld&response_type=code&scope=openid+email+profile&redirect_uri=https://www.hiverai.com/login-success";
         });
     </script>
 </body>
