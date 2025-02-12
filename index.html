@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,15 +8,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to hiverAI</h1>
+        <h1>Welcome to HiverAI</h1>
         <p>We develop AI Agents for your business needs.</p>
         <button id="login-button">Log In / Register</button>
     </div>
 
     <script>
         document.getElementById("login-button").addEventListener("click", function () {
-            // Redirect user to Cognito Hosted UI login page
-            window.location.href = "https://us-east-2_rfcecv1m1r.auth.us-east-2.amazoncognito.com/login?client_id=YOUR_APP_CLIENT_ID&response_type=code&scope=openid+email+profile&redirect_uri=https://www.hiverai.com/login-success";
+            // Redirect to Cognito Hosted UI login page with the correct domain and client ID
+            window.location.href = "https://us-east-2ikbsa6jcg.auth.us-east-2.amazoncognito.com/login?client_id=5mau62v6fu7ir4ealb8j4tmpld&response_type=code&scope=openid+email+profile&redirect_uri=https://www.hiverai.com/login-success";
         });
     </script>
 </body>
