@@ -5,21 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Successful</title>
     <script>
-        // Extract tokens from URL
-        const urlParams = new URLSearchParams(window.location.hash.substring(1));
-        const idToken = urlParams.get("id_token");
-        const accessToken = urlParams.get("access_token");
+        // Extract the authorization code from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const authCode = urlParams.get("code");
 
-        if (idToken) {
-            console.log("User logged in successfully!");
-            localStorage.setItem("idToken", idToken); // Store user session
-            localStorage.setItem("accessToken", accessToken);
-
-            // Redirect user to home or dashboard
-            window.location.href = "/dashboard.html";
+        if (authCode) {
+            console.log("Authorization Code received:", authCode);
+            
+            // Exchange auth code for an ID token (requires backend or API request)
+            fetch("https://your-api-endpoint.com/auth/token", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `grant_type=authorization_code&client_id=YOUR_APP_CLIENT_ID&code=${authCode}&redirect_uri=https://www.hiverai.com/login-success`
+            })
+            .then(response => response.json())
+            .then(data => {
+                localStorage.setItem("idToken", data.id_token);
+                localStorage.setItem("accessToken", data.access_token);
+                console.log("User authenticated:", data.id_token);
+                
+                // Redirect user to dashboard or homepage
+                window.location.href = "/dashboard.html";
+            })
+            .catch(error => {
+                console.error("Error exchanging token:", error);
+                window.location.href = "/login.html";
+            });
         } else {
-            console.log("Authentication failed.");
-            window.location.href = "/login.html"; // Redirect back to login page if auth fails
+            console.log("No authorization code found.");
+            window.location.href = "/login.html";
         }
     </script>
 </head>
