@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Successful</title>
+    <script>
+        // Extract tokens from URL
+        const urlParams = new URLSearchParams(window.location.hash.substring(1));
+        const idToken = urlParams.get("id_token");
+        const accessToken = urlParams.get("access_token");
+
+        if (idToken) {
+            console.log("User logged in successfully!");
+            localStorage.setItem("idToken", idToken); // Store user session
+            localStorage.setItem("accessToken", accessToken);
+
+            // Redirect user to home or dashboard
+            window.location.href = "/dashboard.html";
+        } else {
+            console.log("Authentication failed.");
+            window.location.href = "/login.html"; // Redirect back to login page if auth fails
+        }
+    </script>
+</head>
+<body>
+    <h2>Processing login...</h2>
+</body>
+</html>
