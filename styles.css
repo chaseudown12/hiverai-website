@@ -1,78 +1,42 @@
+/* Reset default margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Set full-page background image */
 body {
-  margin: 0;
-  padding: 0;
-  background: url('https://hiverai-bot.s3.amazonaws.com/homepage-background.png') no-repeat center center fixed;
-  background-size: cover;
-  font-family: sans-serif;
+    background: url('page1-image.png') no-repeat center center/cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    font-family: Arial, sans-serif;
 }
 
-.chat-container {
-  max-width: 600px;
-  margin: 0 auto;
-  text-align: center;
-  padding-top: 50px;
+/* Container Styling */
+.container {
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay for readability */
+    padding: 20px;
+    border-radius: 10px;
 }
 
-.chat-box {
-  background: #FFFFFFCC;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 15px;
-  min-height: 300px;
-  max-height: 400px;
-  overflow-y: auto;
-  margin-bottom: 10px;
+/* Button Styling */
+button {
+    background: #ff9800;
+    border: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+    margin-top: 15px;
+    border-radius: 5px;
+    transition: 0.3s;
 }
 
-#user-input {
-  width: 70%;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #aaa;
+button:hover {
+    background: #e68900;
 }
-
-#send-btn {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  background-color: #4CAF50;
-  color: white;
-  cursor: pointer;
-}
-
-#send-btn:hover {
-  background-color: #45a049;
-}
-
-.login-box {
-  position: relative;
-  top: 50px;
-  margin: 0 auto;
-  background: #ffffffcc;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 10px;
-  text-align: center;
-  max-width: 300px;
-}
-
-.login-box input {
-  display: block;
-  margin: 10px auto;
-  padding: 8px;
-  width: 80%;
-  border-radius: 4px;
-  border: 1px solid #aaa;
-}
-
-.login-box button {
-  margin-top: 10px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  background-color: #4CAF50;
-  color: white;
-  cursor: pointer;
-}
-
-
