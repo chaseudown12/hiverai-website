@@ -9,13 +9,12 @@
 <body>
     <div class="container">
         <h1>Welcome to HiverAI</h1>
-        <p>We develop AI Agents for your business needs.</p>
+        <p>We develop AI Agents for your business needs</p>
         <button id="login-button">Log In / Register</button>
     </div>
 
     <script>
         document.getElementById("login-button").addEventListener("click", function () {
-            // Updated Cognito domain with the correct region (us-east-2)
             window.location.href = "https://us-east-2ikbsa6jcg.auth.us-east-2.amazoncognito.com/oauth2/authorize?client_id=5mau62v6fu7ir4ealb8j4tmpld&response_type=code&scope=openid+email+profile&redirect_uri=https://www.hiverai.com/login-success";
         });
     </script>
