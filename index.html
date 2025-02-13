@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <div class="container">
@@ -12,13 +12,18 @@
         <p>We develop AI Agents for your business needs</p>
         <button id="login-button">Log In / Register</button>
     </div>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var loginButton = document.getElementById("login-button");
-        loginButton.onclick = function () {
-            window.location.href = "https://us-east-2ikbsa6jcg.auth.us-east-2.amazoncognito.com/oauth2/authorize?client_id=5mau62v6fu7ir4ealb8j4tmpld&response_type=code&scope=openid+email+profile&redirect_uri=https://www.hiverai.com/login-success";
-        };
-    });
-</script>  
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var loginButton = document.getElementById("login-button");
+            loginButton.onclick = function (event) {
+                event.preventDefault(); // Prevent any unwanted redirect
+                window.open(
+                    "https://us-east-2ikbsa6jcg.auth.us-east-2.amazoncognito.com/oauth2/authorize?client_id=5mau62v6fu7ir4ealb8j4tmpld&response_type=code&scope=openid+email+profile&redirect_uri=https://www.hiverai.com/login-success",
+                    "_blank"
+                );
+            };
+        });
+    </script>
 </body>
 </html>
