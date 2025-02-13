@@ -7,8 +7,10 @@
 
 /* Set full-page background image */
 body {
-    background: url('page1-image.png') no-repeat center center/cover;
+    background: url('/page1-image.png') no-repeat center center;
+    background-size: cover;
     height: 100vh;
+    min-height: 100vh; /* Ensures it covers full viewport height */
     display: flex;
     justify-content: center;
     align-items: center;
