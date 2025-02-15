@@ -2,66 +2,188 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login Success | Hiver AI</title>
+  <title>Hiver AI Chatbot</title>
   <style>
-    /* Reset some defaults */
+    /* Basic resets */
     html, body {
       margin: 0;
       padding: 0;
       width: 100%;
       height: 100%;
       font-family: sans-serif;
+      background: #121721; /* Dark background */
+      color: #fff;
     }
 
-    /* Full-page background image */
-    body {
-      background: url("owyn-landing-background.png") no-repeat center center fixed;
-      background-size: cover;
-      color: #fff; /* Text color stands out on darker backgrounds */
-    }
-
-    .welcome-container {
+    .chat-container {
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
+      width: 100%;
       height: 100%;
-      text-align: center;
-      background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+      padding: 2rem;
+      box-sizing: border-box;
     }
 
-    .welcome-container h1 {
-      font-size: 3rem;
+    h1 {
       margin-bottom: 1rem;
+      font-size: 2.5rem;
     }
 
-    .welcome-container p {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
+    /* Chat window styling */
+    #chatWindow {
+      width: 100%;
+      max-width: 600px;
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1rem;
+      background-color: #1a1f2a;
     }
 
-    .btn {
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
+    .message {
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+
+    .user {
+      color: #ff4c68;  /* Pinkish for user messages */
+      font-weight: bold;
+    }
+
+    .assistant {
+      color: #fff;     /* White for assistant messages */
+    }
+
+    /* Input area */
+    .input-container {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+    }
+
+    #userMessage {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: 8px 0 0 8px;
+      border: 1px solid #333;
+      outline: none;
+      background-color: #2a2f3a;
+      color: #fff;
+    }
+
+    #sendBtn {
+      padding: 0.75rem 1.25rem;
+      border: 1px solid #333;
+      border-radius: 0 8px 8px 0;
+      outline: none;
+      cursor: pointer;
       background-color: #ff4c68;
       color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none; /* for an anchor link */
+      font-weight: bold;
       transition: background-color 0.2s;
     }
 
-    .btn:hover {
-      background-color: #e0435d; /* slightly darker on hover */
+    #sendBtn:hover {
+      background-color: #e0435d;
     }
   </style>
 </head>
 <body>
-  <div class="welcome-container">
+  <div class="chat-container">
     <h1>Welcome to Hiver AI!</h1>
-    <p>Your login was successful.</p>
-    <a class="btn" href="index.html">Go to Main Site</a>
+    
+    <!-- Chat Window -->
+    <div id="chatWindow"></div>
+
+    <!-- Input Field + Button -->
+    <div class="input-container">
+      <input
+        type="text"
+        id="userMessage"
+        placeholder="Ask me something..."
+      />
+      <button id="sendBtn">Send</button>
+    </div>
   </div>
+
+  <script>
+    const chatWindow = document.getElementById('chatWindow');
+    const userMessageInput = document.getElementById('userMessage');
+    const sendBtn = document.getElementById('sendBtn');
+
+    // Replace with your backend endpoint or a safe approach to calling the ChatGPT API.
+    // For demo only, we show how you'd do it directly (NOT recommended in production).
+    const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY_HERE"; // <-- Put your key here (or better: store it server side)
+
+    async function sendMessage() {
+      const message = userMessageInput.value.trim();
+      if (!message) return;
+
+      // Display user's message
+      addMessage(message, "user");
+
+      // Clear the input field
+      userMessageInput.value = "";
+
+      try {
+        // Call ChatGPT’s API (Chat completion endpoint)
+        // For GPT-3.5 or GPT-4 (latest chat):
+        // Endpoint: https://api.openai.com/v1/chat/completions
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${OPENAI_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",  // or "gpt-4"
+            messages: [
+              { role: "system", content: "You are a helpful assistant." },
+              { role: "user", content: message }
+            ]
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const assistantMessage = data.choices[0].message.content.trim();
+        addMessage(assistantMessage, "assistant");
+      } catch (err) {
+        console.error(err);
+        addMessage("Oops, something went wrong! Check the console.", "assistant");
+      }
+    }
+
+    // Utility function to add a message to the chat window
+    function addMessage(text, sender) {
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(sender);
+
+      if (sender === "user") {
+        msgDiv.innerHTML = `<strong class="user">User:</strong> ${text}`;
+      } else {
+        msgDiv.innerHTML = `<strong class="assistant">Assistant:</strong> ${text}`;
+      }
+
+      chatWindow.appendChild(msgDiv);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+    userMessageInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        sendMessage();
+      }
+    });
+  </script>
 </body>
 </html>
+
