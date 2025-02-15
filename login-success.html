@@ -49,13 +49,15 @@
       line-height: 1.4;
     }
 
+    /* Different styles for user vs Wayfinder */
     .user {
       color: #ff4c68;  /* Pinkish for user messages */
       font-weight: bold;
     }
 
-    .assistant {
-      color: #fff;     /* White for assistant messages */
+    .wayfinder {
+      color: #fff;     /* White for Wayfinder's messages */
+      font-weight: bold;
     }
 
     /* Input area */
@@ -131,8 +133,6 @@
 
       try {
         // Call ChatGPT’s API (Chat completion endpoint)
-        // For GPT-3.5 or GPT-4 (latest chat):
-        // Endpoint: https://api.openai.com/v1/chat/completions
         const response = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -140,9 +140,9 @@
             "Authorization": `Bearer ${OPENAI_API_KEY}`
           },
           body: JSON.stringify({
-            model: "gpt-3.5-turbo",  // or "gpt-4"
+            model: "gpt-3.5-turbo", // or "gpt-4"
             messages: [
-              { role: "system", content: "You are a helpful assistant." },
+              { role: "system", content: "You are Wayfinder, a helpful assistant for Hiver AI." },
               { role: "user", content: message }
             ]
           })
@@ -153,24 +153,24 @@
         }
 
         const data = await response.json();
-        const assistantMessage = data.choices[0].message.content.trim();
-        addMessage(assistantMessage, "assistant");
+        const wayfinderMessage = data.choices[0].message.content.trim();
+        addMessage(wayfinderMessage, "wayfinder");
       } catch (err) {
         console.error(err);
-        addMessage("Oops, something went wrong! Check the console.", "assistant");
+        addMessage("Oops, something went wrong! Check the console.", "wayfinder");
       }
     }
 
     // Utility function to add a message to the chat window
     function addMessage(text, sender) {
       const msgDiv = document.createElement("div");
-      msgDiv.classList.add("message");
-      msgDiv.classList.add(sender);
+      msgDiv.classList.add("message", sender);
 
       if (sender === "user") {
-        msgDiv.innerHTML = `<strong class="user">User:</strong> ${text}`;
+        msgDiv.innerHTML = `<span class="user">User:</span> ${text}`;
       } else {
-        msgDiv.innerHTML = `<strong class="assistant">Assistant:</strong> ${text}`;
+        // Show "Wayfinder" label
+        msgDiv.innerHTML = `<span class="wayfinder">Wayfinder:</span> ${text}`;
       }
 
       chatWindow.appendChild(msgDiv);
@@ -186,4 +186,3 @@
   </script>
 </body>
 </html>
-
