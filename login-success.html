@@ -1,48 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Successful</title>
-    <script>
-        // Extract the authorization code from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const authCode = urlParams.get("code");
+  <meta charset="UTF-8" />
+  <title>Login Success | Hiver AI</title>
+  <style>
+    /* Reset some defaults */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: sans-serif;
+    }
 
-        if (authCode) {
-            console.log("Authorization Code received:", authCode);
-            
-            // Exchange auth code for an ID token (requires backend or API request)
-            fetch("https://your-api-endpoint.com/auth/token", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: `grant_type=authorization_code&client_id=YOUR_APP_CLIENT_ID&code=${authCode}&redirect_uri=https://www.hiverai.com/login-success`
-            })
-            .then(response => response.json())
-            .then(data => {
-                localStorage.setItem("idToken", data.id_token);
-                localStorage.setItem("accessToken", data.access_token);
-                console.log("User authenticated:", data.id_token);
-                
-                // Redirect user to dashboard or homepage
-                window.location.href = "/dashboard.html";
-            })
-            .catch(error => {
-                console.error("Error exchanging token:", error);
-                window.location.href = "/login.html";
-            });
-        } else {
-            console.log("No authorization code found.");
-            window.location.href = "/login.html";
-        }
-    </script>
+    /* Full-page background image */
+    body {
+      background: url("owyn-landing-background.png") no-repeat center center fixed;
+      background-size: cover;
+      color: #fff; /* Text color stands out on darker backgrounds */
+    }
+
+    .welcome-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      text-align: center;
+      background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    }
+
+    .welcome-container h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .welcome-container p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      background-color: #ff4c68;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none; /* for an anchor link */
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #e0435d; /* slightly darker on hover */
+    }
+  </style>
 </head>
 <body>
-    <h2>Processing login...</h2>
+  <div class="welcome-container">
+    <h1>Welcome to Hiver AI!</h1>
+    <p>Your login was successful.</p>
+    <a class="btn" href="index.html">Go to Main Site</a>
+  </div>
 </body>
 </html>
-
-
-
