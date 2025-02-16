@@ -113,26 +113,63 @@
   </div>
 
   <script>
+    /************************************************************
+     * 1) Get the Logged-In User's First Name
+     * 
+     * Example approach: we look for an "id_token" in localStorage,
+     * decode it, and read the `given_name` claim. If you have a 
+     * different method of retrieving the user’s name, you can 
+     * replace this logic as needed.
+     ************************************************************/
+    let userDisplayName = "User"; // fallback if we can't decode a name
+
+    function parseJwt(token) {
+      // Basic JWT parsing (no signature validation)
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64).split('').map(c =>
+          '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join('')
+      );
+      return JSON.parse(jsonPayload);
+    }
+
+    // Attempt to read the token from localStorage (or wherever you store it)
+    const savedToken = localStorage.getItem("id_token");
+    if (savedToken) {
+      try {
+        const decoded = parseJwt(savedToken);
+        // Usually "given_name" or "name" in Cognito
+        userDisplayName = decoded.given_name || decoded.name || "User";
+      } catch (err) {
+        console.error("Failed to parse JWT:", err);
+      }
+    }
+
+    /************************************************************
+     * 2) Chat Code
+     ************************************************************/
     const chatWindow = document.getElementById('chatWindow');
     const userMessageInput = document.getElementById('userMessage');
     const sendBtn = document.getElementById('sendBtn');
 
-    // Replace with your backend endpoint or a safe approach to calling the ChatGPT API.
-    // For demo only, we show how you'd do it directly (NOT recommended in production).
-    const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY_HERE"; // <-- Put your key here (or better: store it server side)
+    // NOTE: This direct approach is NOT recommended for production
+    // because your key is in client code. Use a server or Lambda instead.
+    const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY_HERE";
 
     async function sendMessage() {
       const message = userMessageInput.value.trim();
       if (!message) return;
 
-      // Display user's message
+      // Display the user's message, with the user's display name
       addMessage(message, "user");
 
-      // Clear the input field
+      // Clear the input
       userMessageInput.value = "";
 
       try {
-        // Call ChatGPT’s API (Chat completion endpoint)
+        // Send the message to OpenAI
         const response = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -161,15 +198,16 @@
       }
     }
 
-    // Utility function to add a message to the chat window
+    // This function displays the message in the chat window
     function addMessage(text, sender) {
       const msgDiv = document.createElement("div");
       msgDiv.classList.add("message", sender);
 
       if (sender === "user") {
-        msgDiv.innerHTML = `<span class="user">User:</span> ${text}`;
+        // Use the userDisplayName variable instead of the literal "User"
+        msgDiv.innerHTML = `<span class="user">${userDisplayName}:</span> ${text}`;
       } else {
-        // Show "Wayfinder" label
+        // "Wayfinder"
         msgDiv.innerHTML = `<span class="wayfinder">Wayfinder:</span> ${text}`;
       }
 
@@ -177,6 +215,7 @@
       chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
+    // Hook up the Send button and Enter key
     sendBtn.addEventListener("click", sendMessage);
     userMessageInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
