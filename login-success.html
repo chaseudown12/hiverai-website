@@ -1,71 +1,87 @@
-// Load the AWS SDK
-const script = document.createElement("script");
-script.src = "https://sdk.amazonaws.com/js/aws-sdk-2.1030.0.min.js";
-document.head.appendChild(script);
+<script>
+    // Load the AWS SDK
+    const script = document.createElement("script");
+    script.src = "https://sdk.amazonaws.com/js/aws-sdk-2.1030.0.min.js";
+    document.head.appendChild(script);
 
-script.onload = () => {
-    AWS.config.region = "us-east-2"; // AWS Cognito & Lex Region
+    script.onload = () => {
+        AWS.config.region = "us-east-2"; // AWS Cognito & Lex Region
 
-    const poolData = {
-        UserPoolId: "us-east-2_ikBSA6JCg", // Your Cognito User Pool ID
-        ClientId: "5mau62v6fu7ir4ealb8j4tmpld" // Your Cognito App Client ID
+        const poolData = {
+            UserPoolId: "us-east-2_ikBSA6JCg", // Your Cognito User Pool ID
+            ClientId: "5mau62v6fu7ir4ealb8j4tmpld" // Your Cognito App Client ID
+        };
+
+        window.userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
     };
 
-    window.userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-};
+    // Function to send messages to Amazon Lex
+    async function sendMessage() {
+        const token = localStorage.getItem("id_token");
 
-// Function to handle user login and store authentication token
-function loginUser(username, password) {
-    const authenticationData = {
-        Username: username,
-        Password: password
-    };
-
-    const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
-
-    const userData = {
-        Username: username,
-        Pool: userPool
-    };
-
-    const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-
-    cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: (result) => {
-            console.log("Login successful");
-            localStorage.setItem("id_token", result.getIdToken().getJwtToken());
-        },
-        onFailure: (err) => {
-            console.error("Login failed", err);
+        if (!token) {
+            alert("Please log in first!");
+            return;
         }
-    });
-}
 
-// Function to send messages to Amazon Lex
-async function sendMessage() {
-    const token = localStorage.getItem("id_token");
+        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+            Logins: {
+                "cognito-idp.us-east-2.amazonaws.com/us-east-2_ikBSA6JCg": token
+            }
+        });
 
-    if (!token) {
-        alert("Please log in first!");
-        return;
+        const userMessageInput = document.getElementById("userMessage");
+        const message = userMessageInput.value.trim();
+        if (!message) return;
+
+        addMessage(message, "user");
+        userMessageInput.value = "";
+
+        const lexRuntime = new AWS.LexRuntimeV2();
+        const params = {
+            botId: "M6KGIA0V21",  // Your Amazon Lex Bot ID
+            botAliasId: "TSTALIASID", // Your Bot Alias ID
+            localeId: "en_US",
+            sessionId: "user-session",
+            text: message
+        };
+
+        try {
+            const response = await lexRuntime.recognizeText(params).promise();
+            if (response.messages.length > 0) {
+                addMessage(response.messages[0].content, "wayfinder");
+            } else {
+                addMessage("I'm not sure how to respond to that.", "wayfinder");
+            }
+        } catch (err) {
+            console.error(err);
+            addMessage("Error communicating with Amazon Lex.", "wayfinder");
+        }
     }
 
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        Logins: {
-            "cognito-idp.us-east-2.amazonaws.com/us-east-2_ikBSA6JCg": token
+    // Function to display messages in chat window
+    function addMessage(text, sender) {
+        const chatWindow = document.getElementById("chatWindow");
+        const msgDiv = document.createElement("div");
+        msgDiv.classList.add("message", sender);
+
+        if (sender === "user") {
+            msgDiv.innerHTML = `<span class="user">User:</span> ${text}`;
+        } else {
+            msgDiv.innerHTML = `<span class="wayfinder">Wayfinder:</span> ${text}`;
+        }
+
+        chatWindow.appendChild(msgDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // Event Listeners for Chat Input
+    document.getElementById("sendBtn").addEventListener("click", sendMessage);
+    document.getElementById("userMessage").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            sendMessage();
         }
     });
+</script>
 
-    const userMessageInput = document.getElementById("userMessage");
-    const message = userMessageInput.value.trim();
-    if (!message) return;
 
-    addMessage(message, "user");
-    userMessageInput.value = "";
-
-    const lexRuntime = new AWS.LexRuntimeV2();
-    const params = {
-        botId: "M6KGIA0V21",  // Your Amazon Lex Bot ID
-        botAliasId: "TSTALIASID", // Your Bot Alias ID
-        localeId: "en_US",
-        sessionId: "user-session",
