@@ -4,7 +4,7 @@ script.src = "https://sdk.amazonaws.com/js/aws-sdk-2.1030.0.min.js";
 document.head.appendChild(script);
 
 script.onload = () => {
-    AWS.config.region = "us-east-2"; // Your AWS Cognito Region
+    AWS.config.region = "us-east-2"; // AWS Cognito & Lex Region
 
     const poolData = {
         UserPoolId: "us-east-2_ikBSA6JCg", // Your Cognito User Pool ID
@@ -14,7 +14,7 @@ script.onload = () => {
     window.userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 };
 
-// Function to handle user login and store the authentication token
+// Function to handle user login and store authentication token
 function loginUser(username, password) {
     const authenticationData = {
         Username: username,
@@ -65,46 +65,7 @@ async function sendMessage() {
 
     const lexRuntime = new AWS.LexRuntimeV2();
     const params = {
-        botId: "YOUR_BOT_ID",  // Replace with your Amazon Lex Bot ID
-        botAliasId: "YOUR_BOT_ALIAS_ID", // Replace with your Bot Alias ID
+        botId: "M6KGIA0V21",  // Your Amazon Lex Bot ID
+        botAliasId: "TSTALIASID", // Your Bot Alias ID
         localeId: "en_US",
         sessionId: "user-session",
-        text: message
-    };
-
-    try {
-        const response = await lexRuntime.recognizeText(params).promise();
-        if (response.messages.length > 0) {
-            addMessage(response.messages[0].content, "wayfinder");
-        } else {
-            addMessage("I'm not sure how to respond to that.", "wayfinder");
-        }
-    } catch (err) {
-        console.error(err);
-        addMessage("Error communicating with Amazon Lex.", "wayfinder");
-    }
-}
-
-// Function to display messages in chat window
-function addMessage(text, sender) {
-    const chatWindow = document.getElementById("chatWindow");
-    const msgDiv = document.createElement("div");
-    msgDiv.classList.add("message", sender);
-
-    if (sender === "user") {
-        msgDiv.innerHTML = `<span class="user">User:</span> ${text}`;
-    } else {
-        msgDiv.innerHTML = `<span class="wayfinder">Wayfinder:</span> ${text}`;
-    }
-
-    chatWindow.appendChild(msgDiv);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
-// Event Listeners for Chat Input
-document.getElementById("sendBtn").addEventListener("click", sendMessage);
-document.getElementById("userMessage").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        sendMessage();
-    }
-});
