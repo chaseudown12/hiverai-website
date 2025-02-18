@@ -1,130 +1,159 @@
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Ensure AWS SDK is loaded
-    AWS.config.region = "us-east-2"; // AWS Cognito Region
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Success</title>
 
-    const poolData = {
-        UserPoolId: "us-east-2_ikBSA6JCg", // Your Cognito User Pool ID
-        ClientId: "5mau62v6fu7ir4ealb8j4tmpld" // Your Cognito App Client ID
-    };
+    <!-- Load Cognito Identity SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/amazon-cognito-identity-js/5.2.9/amazon-cognito-identity.min.js"></script>
+    
+    <!-- Load AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1030.0.min.js"></script>
 
-    window.userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-
-    // Function to handle user login
-    function loginUser(username, password) {
-        const authenticationData = {
-            Username: username,
-            Password: password
-        };
-
-        const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
-
-        const userData = {
-            Username: username,
-            Pool: userPool
-        };
-
-        const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-
-        cognitoUser.authenticateUser(authenticationDetails, {
-            onSuccess: (result) => {
-                console.log("Login successful");
-                localStorage.setItem("id_token", result.getIdToken().getJwtToken());
-            },
-            onFailure: (err) => {
-                console.error("Login failed", err);
-            }
-        });
-    }
-
-    // Function to send messages to Amazon Lex
-    async function sendMessage() {
-        const token = localStorage.getItem("id_token");
-
-        if (!token) {
-            alert("Please log in first!");
-            return;
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
         }
 
-        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            Logins: {
-                "cognito-idp.us-east-2.amazonaws.com/us-east-2_ikBSA6JCg": token
-            }
-        });
-
-        const userMessageInput = document.getElementById("userMessage");
-        if (!userMessageInput) {
-            console.error("Chat input field not found!");
-            return;
+        #chatWindow {
+            width: 50%;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            background: white;
+            margin: 20px auto;
+            padding: 10px;
         }
 
-        const message = userMessageInput.value.trim();
-        if (!message) return;
+        #userMessage {
+            width: 40%;
+            padding: 10px;
+            margin-right: 5px;
+        }
 
-        addMessage(message, "user");
-        userMessageInput.value = "";
+        #sendBtn {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Wayfinder</h1>
 
-        const lexRuntime = new AWS.LexRuntimeV2();
-        const params = {
-            botId: "M6KGIA0V21",  // Your Amazon Lex Bot ID
-            botAliasId: "TSTALIASID", // Your Bot Alias ID
-            localeId: "en_US",
-            sessionId: "user-session",
-            text: message
-        };
+    <div id="chatWindow"></div>
+    
+    <input type="text" id="userMessage" placeholder="Type a message...">
+    <button id="sendBtn">Send</button>
 
-        try {
-            const response = await lexRuntime.recognizeText(params).promise();
-            if (response.messages.length > 0) {
-                addMessage(response.messages[0].content, "wayfinder");
+    <!-- JavaScript to Handle Cognito Authentication and Amazon Lex -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("Page fully loaded, initializing scripts...");
+
+            // Ensure AWS SDK is loaded
+            AWS.config.region = "us-east-2"; // AWS Cognito Region
+
+            const poolData = {
+                UserPoolId: "us-east-2_ikBSA6JCg",
+                ClientId: "5mau62v6fu7ir4ealb8j4tmpld"
+            };
+
+            window.userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+            // Function to send messages to Amazon Lex
+            async function sendMessage() {
+                const token = localStorage.getItem("id_token");
+
+                if (!token) {
+                    alert("Please log in first!");
+                    return;
+                }
+
+                AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                    Logins: {
+                        "cognito-idp.us-east-2.amazonaws.com/us-east-2_ikBSA6JCg": token
+                    }
+                });
+
+                const userMessageInput = document.getElementById("userMessage");
+                if (!userMessageInput) {
+                    console.error("Chat input field not found!");
+                    return;
+                }
+
+                const message = userMessageInput.value.trim();
+                if (!message) return;
+
+                addMessage(message, "user");
+                userMessageInput.value = "";
+
+                const lexRuntime = new AWS.LexRuntimeV2();
+                const params = {
+                    botId: "M6KGIA0V21",
+                    botAliasId: "TSTALIASID",
+                    localeId: "en_US",
+                    sessionId: "user-session",
+                    text: message
+                };
+
+                try {
+                    const response = await lexRuntime.recognizeText(params).promise();
+                    if (response.messages.length > 0) {
+                        addMessage(response.messages[0].content, "wayfinder");
+                    } else {
+                        addMessage("I'm not sure how to respond to that.", "wayfinder");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    addMessage("Error communicating with Amazon Lex.", "wayfinder");
+                }
+            }
+
+            function addMessage(text, sender) {
+                const chatWindow = document.getElementById("chatWindow");
+                if (!chatWindow) {
+                    console.error("Chat window not found!");
+                    return;
+                }
+
+                const msgDiv = document.createElement("div");
+                msgDiv.classList.add("message", sender);
+
+                if (sender === "user") {
+                    msgDiv.innerHTML = `<span class="user">User:</span> ${text}`;
+                } else {
+                    msgDiv.innerHTML = `<span class="wayfinder">Wayfinder:</span> ${text}`;
+                }
+
+                chatWindow.appendChild(msgDiv);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+
+            // Attach event listeners safely
+            const sendBtn = document.getElementById("sendBtn");
+            const userMessageInput = document.getElementById("userMessage");
+
+            if (sendBtn) {
+                sendBtn.addEventListener("click", sendMessage);
             } else {
-                addMessage("I'm not sure how to respond to that.", "wayfinder");
+                console.error("Send button not found!");
             }
-        } catch (err) {
-            console.error(err);
-            addMessage("Error communicating with Amazon Lex.", "wayfinder");
-        }
-    }
 
-    // Function to display messages in chat window
-    function addMessage(text, sender) {
-        const chatWindow = document.getElementById("chatWindow");
-        if (!chatWindow) {
-            console.error("Chat window not found!");
-            return;
-        }
-
-        const msgDiv = document.createElement("div");
-        msgDiv.classList.add("message", sender);
-
-        if (sender === "user") {
-            msgDiv.innerHTML = `<span class="user">User:</span> ${text}`;
-        } else {
-            msgDiv.innerHTML = `<span class="wayfinder">Wayfinder:</span> ${text}`;
-        }
-
-        chatWindow.appendChild(msgDiv);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
-
-    // Event Listeners for Chat Input
-    const sendBtn = document.getElementById("sendBtn");
-    const userMessageInput = document.getElementById("userMessage");
-
-    if (sendBtn) {
-        sendBtn.addEventListener("click", sendMessage);
-    } else {
-        console.error("Send button not found!");
-    }
-
-    if (userMessageInput) {
-        userMessageInput.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
-                sendMessage();
+            if (userMessageInput) {
+                userMessageInput.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        sendMessage();
+                    }
+                });
+            } else {
+                console.error("User message input field not found!");
             }
         });
-    } else {
-        console.error("User message input field not found!");
-    }
-});
-</script>
+    </script>
+</body>
+</html>
