@@ -5,11 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login Success</title>
 
-  <!-- Load Cognito Identity SDK (avoids AmazonCognitoIdentity Not Defined Error) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/amazon-cognito-identity-js/5.2.9/amazon-cognito-identity.min.js"></script>
-  
-  <!-- Load AWS SDK (Required for AWS Cognito & Lex) -->
+  <!-- 
+    ADDED/UPDATED: Load AWS SDK first 
+    (Required by Cognito Identity for certain features)
+  -->
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1030.0.min.js"></script>
+
+  <!-- 
+    ADDED/UPDATED: Load Amazon Cognito Identity JS after AWS SDK 
+    (Prevents "AmazonCognitoIdentity is not defined" errors)
+  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/amazon-cognito-identity-js/5.2.9/amazon-cognito-identity.min.js"></script>
 
   <style>
     body {
@@ -63,7 +69,7 @@
     document.addEventListener("DOMContentLoaded", function () {
       console.log("Page fully loaded, initializing scripts...");
 
-      // Check if the Cognito SDK is loaded—because apparently, that’s too much to ask sometimes.
+      // Check if the Cognito SDK is loaded
       if (typeof AmazonCognitoIdentity === "undefined") {
         console.error("AmazonCognitoIdentity is not defined! Ensure the SDK is loaded in the <head>.");
         return;
@@ -119,7 +125,7 @@
           const lexRuntime = new AWS.LexRuntimeV2();
           const params = {
             botId: "M6KGIA0V21",  // Your Amazon Lex Bot ID
-            botAliasId: "TSTALIASID", // Your Bot Alias ID – verify that this is correct
+            botAliasId: "TSTALIASID", // Your Bot Alias ID
             localeId: "en_US",
             sessionId: "user-session",
             text: message
