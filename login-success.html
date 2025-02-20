@@ -14,7 +14,8 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+      background-color: darkblue;
+      color: white;
       text-align: center;
       margin: 0;
       padding: 20px;
@@ -24,21 +25,28 @@
       width: 50%;
       height: 300px;
       overflow-y: auto;
-      border: 1px solid #ccc;
-      background: white;
+      border: 1px solid white;
+      background: darkblue;
       margin: 20px auto;
       padding: 10px;
+      color: white;
     }
 
     #userMessage {
       width: 40%;
       padding: 10px;
       margin-right: 5px;
+      background: darkblue;
+      border: 1px solid white;
+      color: white;
     }
 
     #sendBtn {
       padding: 10px 15px;
       cursor: pointer;
+      background: darkblue;
+      border: 1px solid white;
+      color: white;
     }
   </style>
 </head>
@@ -80,9 +88,9 @@
           return;
         }
 
-        // Set up AWS credentials with your brand-new Identity Pool ID.
+        // Set up AWS credentials with your Identity Pool ID.
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-          IdentityPoolId: "us-east-2:6b3d8ba3-916b-472d-816f-b89a4924fa1a", // <--- Updated Identity Pool ID
+          IdentityPoolId: "us-east-2:6b3d8ba3-916b-472d-816f-b89a4924fa1a", // Your Identity Pool ID
           Logins: {
             "cognito-idp.us-east-2.amazonaws.com/us-east-2_ikBSA6JCg": token
           }
@@ -100,7 +108,7 @@
         addMessage(message, "user");
         userMessageInput.value = "";
 
-        // Refresh credentials before invoking Lex (because AWS is picky like that).
+        // Refresh credentials before invoking Lex.
         AWS.config.credentials.get(function (err) {
           if (err) {
             console.error("Error retrieving credentials:", err);
