@@ -32,6 +32,10 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
         }
+        .company-name {
+            font-weight: bold;
+            font-size: 2em;
+        }
         .button {
             background-color: #ff6600;
             color: white;
@@ -46,9 +50,10 @@
 <body>
     <div id="overlay"></div>
     <div id="popup">
-        <h2>Wayfinder</h2>
+        <h2>Wayfinder AI Assistant</h2>
         <p>Good afternoon, I see it's your first time visiting your ISNetworld portal. Before you start working on your RAVS, let's double-check your company info on record matches what you provided to ISNetworld.</p>
-        <p>If they don't match, your RAVS will get kicked. Here is your company data. Does it match exactly what you gave to ISNetworld for your company name?</p>
+        <p class="company-name">Sam's Ladder Company LLC</p>
+        <p>If they don't match, your RAVS will get kicked. Does it match exactly what you gave to ISNetworld for your company name?</p>
         <button class="button" onclick="closePopup()">Verified</button>
     </div>
 
