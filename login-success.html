@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login Success</title>
 
-  <!-- Load AWS SDK and Cognito SDK with defer -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1030.0/aws-sdk.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/amazon-cognito-identity-js/5.2.9/amazon-cognito-identity.min.js" defer></script>
+  <!-- Load AWS SDK and Cognito SDK -->
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1030.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/amazon-cognito-identity-js/5.2.9/amazon-cognito-identity.min.js"></script>
 
   <style>
     body {
@@ -60,11 +60,14 @@
     document.addEventListener("DOMContentLoaded", function () {
       console.log("Page fully loaded, initializing scripts...");
 
-      function initializeCognito() {
-        console.log("Cognito SDK is loaded. Proceeding with initialization.");
+      // Check if AWS and Cognito SDKs are loaded properly
+      if (typeof AWS === "undefined" || typeof AmazonCognitoIdentity === "undefined") {
+        console.error("AWS SDK or AmazonCognitoIdentity is missing! Check your script URLs.");
+        return;
+      }
 
-        // Configure AWS region
-        AWS.config.region = "us-east-2"; 
+      function initializeCognito() {
+        console.log("Cognito SDK loaded successfully. Proceeding with initialization.");
 
         // Cognito User Pool configuration
         const poolData = {
@@ -74,34 +77,27 @@
         window.userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
       }
 
-      // Wait for Cognito SDK to be available before initializing
-      function checkCognitoReady() {
-        if (typeof AmazonCognitoIdentity === "undefined") {
-          console.error("AmazonCognitoIdentity is still not defined. Retrying...");
-          setTimeout(checkCognitoReady, 1000);
-        } else {
-          console.log("AmazonCognitoIdentity is now available.");
-          initializeCognito();
-        }
+      initializeCognito();
+
+      // Check for a valid authentication token
+      const token = localStorage.getItem("id_token");
+      if (!token) {
+        alert("You must sign in first! Redirecting...");
+        window.location.href = "https://www.hiverai.com"; // Redirect to login
+        return;
       }
-      checkCognitoReady();
+
+      // Set AWS credentials
+      AWS.config.region = "us-east-2"; 
+      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: "us-east-2:6b3d8ba3-916b-472d-816f-b89a4924fa1a",
+        Logins: {
+          "cognito-idp.us-east-2.amazonaws.com/us-east-2_ikBSA6JCg": token
+        }
+      });
 
       // Function to send messages to Amazon Lex
       async function sendMessage() {
-        const token = localStorage.getItem("id_token");
-
-        if (!token) {
-          alert("Please log in first!");
-          return;
-        }
-
-        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-          IdentityPoolId: "us-east-2:6b3d8ba3-916b-472d-816f-b89a4924fa1a",
-          Logins: {
-            "cognito-idp.us-east-2.amazonaws.com/us-east-2_ikBSA6JCg": token
-          }
-        });
-
         const userMessageInput = document.getElementById("userMessage");
         if (!userMessageInput) {
           console.error("Chat input field not found!");
