@@ -1,192 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login Success</title>
-
-  <!-- ✅ Load AWS SDK and Cognito SDK from VERIFIED CDN sources -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1317.0/aws-sdk.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/amazon-cognito-identity-js/5.2.9/amazon-cognito-identity.min.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: darkblue;
-      color: white;
-      text-align: center;
-      margin: 0;
-      padding: 20px;
-    }
-
-    #chatWindow {
-      width: 50%;
-      height: 300px;
-      overflow-y: auto;
-      border: 1px solid white;
-      background: darkblue;
-      margin: 20px auto;
-      padding: 10px;
-      color: white;
-    }
-
-    #userMessage {
-      width: 40%;
-      padding: 10px;
-      margin-right: 5px;
-      background: darkblue;
-      border: 1px solid white;
-      color: white;
-    }
-
-    #sendBtn {
-      padding: 10px 15px;
-      cursor: pointer;
-      background: darkblue;
-      border: 1px solid white;
-      color: white;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISNetworld Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        #popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            width: 400px;
+        }
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .button {
+            background-color: #ff6600;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-  <h1>Welcome to Wayfinder</h1>
+    <h1>Welcome to Your ISNetworld Portal</h1>
+    <p>Here you can manage your RAVS and compliance requirements.</p>
 
-  <div id="chatWindow"></div>
-  
-  <input type="text" id="userMessage" placeholder="Type a message..." />
-  <button id="sendBtn">Send</button>
+    <div id="overlay"></div>
+    <div id="popup">
+        <h2>Wayfinder</h2>
+        <p>Good afternoon, I see it's your first time visiting your ISNetworld portal. Before you start working on your RAVS, let's double-check your company info on record matches what you provided to ISNetworld.</p>
+        <p>If they don't match, your RAVS will get kicked. Here is your company data. Does it match exactly what you gave to ISNetworld for your company name?</p>
+        <button class="button" onclick="closePopup()">Verified</button>
+    </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      console.log("✅ Page fully loaded, initializing scripts...");
-
-      // ✅ Check if AWS SDK and Cognito SDK are loaded properly
-      if (typeof AWS === "undefined") {
-        console.error("❌ AWS SDK did not load! Check the script URL.");
-        return;
-      }
-      if (typeof AmazonCognitoIdentity === "undefined") {
-        console.error("❌ AmazonCognitoIdentity SDK did not load! Check the script URL.");
-        return;
-      }
-
-      console.log("✅ AWS SDK and Cognito SDK are loaded correctly!");
-
-      function initializeCognito() {
-        console.log("✅ Cognito SDK is available. Initializing Cognito...");
-
-        // Cognito User Pool configuration
-        const poolData = {
-          UserPoolId: "us-east-2_ikBSA6JCg",
-          ClientId: "5mau62v6fu7ir4ealb8j4tmpld"
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                document.getElementById('popup').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            }, 1500);
         };
-        window.userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-      }
 
-      initializeCognito();
-
-      // ✅ Check for a valid authentication token
-      const token = localStorage.getItem("id_token");
-      if (!token) {
-        alert("You must sign in first! Redirecting...");
-        window.location.href = "https://www.hiverai.com"; // Redirect to login
-        return;
-      }
-
-      // ✅ Set AWS credentials
-      AWS.config.region = "us-east-2"; 
-      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: "us-east-2:6b3d8ba3-916b-472d-816f-b89a4924fa1a",
-        Logins: {
-          "cognito-idp.us-east-2.amazonaws.com/us-east-2_ikBSA6JCg": token
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
         }
-      });
-
-      // ✅ Function to send messages to Amazon Lex
-      async function sendMessage() {
-        const userMessageInput = document.getElementById("userMessage");
-        if (!userMessageInput) {
-          console.error("❌ Chat input field not found!");
-          return;
-        }
-
-        const message = userMessageInput.value.trim();
-        if (!message) return;
-
-        addMessage(message, "user");
-        userMessageInput.value = "";
-
-        AWS.config.credentials.get(function (err) {
-          if (err) {
-            console.error("❌ Error retrieving credentials:", err);
-            addMessage("Error retrieving credentials.", "wayfinder");
-            return;
-          }
-
-          const lexRuntime = new AWS.LexRuntimeV2();
-          const params = {
-            botId: "M6KGIA0V21",
-            botAliasId: "TSTALIASID",
-            localeId: "en_US",
-            sessionId: Date.now().toString(), 
-            text: message
-          };
-
-          lexRuntime.recognizeText(params).promise()
-            .then(response => {
-              if (response.messages && response.messages.length > 0) {
-                addMessage(response.messages[0].content, "wayfinder");
-              } else {
-                addMessage("I'm not sure how to respond to that.", "wayfinder");
-              }
-            })
-            .catch(err => {
-              console.error("❌ Lex Error:", JSON.stringify(err, null, 2));
-              addMessage(`Error: ${err.message}`, "wayfinder");
-            });
-        });
-      }
-
-      function addMessage(text, sender) {
-        const chatWindow = document.getElementById("chatWindow");
-        if (!chatWindow) {
-          console.error("❌ Chat window not found!");
-          return;
-        }
-
-        const msgDiv = document.createElement("div");
-        msgDiv.classList.add("message", sender);
-
-        if (sender === "user") {
-          msgDiv.innerHTML = `<span class="user">User:</span> ${text}`;
-        } else {
-          msgDiv.innerHTML = `<span class="wayfinder">Wayfinder:</span> ${text}`;
-        }
-
-        chatWindow.appendChild(msgDiv);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-      }
-
-      // ✅ Attach event listeners
-      const sendBtn = document.getElementById("sendBtn");
-      const userMessageInput = document.getElementById("userMessage");
-
-      if (sendBtn) {
-        sendBtn.addEventListener("click", sendMessage);
-      } else {
-        console.error("❌ Send button not found!");
-      }
-
-      if (userMessageInput) {
-        userMessageInput.addEventListener("keydown", (e) => {
-          if (e.key === "Enter") {
-            sendMessage();
-          }
-        });
-      } else {
-        console.error("❌ User message input field not found!");
-      }
-    });
-  </script>
+    </script>
 </body>
 </html>
