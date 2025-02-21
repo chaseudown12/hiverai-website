@@ -17,12 +17,13 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: white;
+            background-color: #d9534f;
+            color: white;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             border-radius: 10px;
             width: 400px;
-            border: 3px solid #C54545;
+            text-align: left;
         }
         #overlay {
             display: none;
@@ -36,29 +37,34 @@
         .company-name {
             font-weight: bold;
             font-size: 2em;
-            color: #C54545;
         }
         .button {
-            background-color: #C54545;
+            background-color: #d9534f;
             color: white;
             padding: 10px 20px;
             border: none;
             cursor: pointer;
             border-radius: 5px;
             margin-top: 10px;
+            font-size: 1em;
         }
-        .header-logo {
-            width: 200px;
-            display: block;
-            margin: 0 auto 10px;
+        .popup-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .popup-header img {
+            height: 40px;
         }
     </style>
 </head>
 <body>
     <div id="overlay"></div>
     <div id="popup">
-        <img src="wayfinder_emblem.png" alt="Wayfinder Logo" class="header-logo">
-        <h2 style="color: #C54545;">Wayfinder AI Assistant</h2>
+        <div class="popup-header">
+            <img src="wayfinder_logo.png" alt="Wayfinder Logo">
+            <h2>Wayfinder AI Assistant</h2>
+        </div>
         <p>Good afternoon, I see it's your first time visiting your ISNetworld portal. Before you start working on your RAVS, let's double-check your company info on record matches what you provided to ISNetworld.</p>
         <p class="company-name">Sam's Ladder Company LLC</p>
         <p>If they don't match, your RAVS will get kicked. Does it match exactly what you gave to ISNetworld for your company name?</p>
