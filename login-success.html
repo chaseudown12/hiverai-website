@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login Success</title>
 
-  <!-- Load AWS SDK and Cognito SDK -->
-  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1030.0.min.js"></script>
+  <!-- ✅ Load AWS SDK and Cognito SDK from VERIFIED CDN sources -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1317.0/aws-sdk.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/amazon-cognito-identity-js/5.2.9/amazon-cognito-identity.min.js"></script>
 
   <style>
@@ -58,16 +58,22 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      console.log("Page fully loaded, initializing scripts...");
+      console.log("✅ Page fully loaded, initializing scripts...");
 
-      // Check if AWS and Cognito SDKs are loaded properly
-      if (typeof AWS === "undefined" || typeof AmazonCognitoIdentity === "undefined") {
-        console.error("AWS SDK or AmazonCognitoIdentity is missing! Check your script URLs.");
+      // ✅ Check if AWS SDK and Cognito SDK are loaded properly
+      if (typeof AWS === "undefined") {
+        console.error("❌ AWS SDK did not load! Check the script URL.");
+        return;
+      }
+      if (typeof AmazonCognitoIdentity === "undefined") {
+        console.error("❌ AmazonCognitoIdentity SDK did not load! Check the script URL.");
         return;
       }
 
+      console.log("✅ AWS SDK and Cognito SDK are loaded correctly!");
+
       function initializeCognito() {
-        console.log("Cognito SDK loaded successfully. Proceeding with initialization.");
+        console.log("✅ Cognito SDK is available. Initializing Cognito...");
 
         // Cognito User Pool configuration
         const poolData = {
@@ -79,7 +85,7 @@
 
       initializeCognito();
 
-      // Check for a valid authentication token
+      // ✅ Check for a valid authentication token
       const token = localStorage.getItem("id_token");
       if (!token) {
         alert("You must sign in first! Redirecting...");
@@ -87,7 +93,7 @@
         return;
       }
 
-      // Set AWS credentials
+      // ✅ Set AWS credentials
       AWS.config.region = "us-east-2"; 
       AWS.config.credentials = new AWS.CognitoIdentityCredentials({
         IdentityPoolId: "us-east-2:6b3d8ba3-916b-472d-816f-b89a4924fa1a",
@@ -96,11 +102,11 @@
         }
       });
 
-      // Function to send messages to Amazon Lex
+      // ✅ Function to send messages to Amazon Lex
       async function sendMessage() {
         const userMessageInput = document.getElementById("userMessage");
         if (!userMessageInput) {
-          console.error("Chat input field not found!");
+          console.error("❌ Chat input field not found!");
           return;
         }
 
@@ -112,7 +118,7 @@
 
         AWS.config.credentials.get(function (err) {
           if (err) {
-            console.error("Error retrieving credentials:", err);
+            console.error("❌ Error retrieving credentials:", err);
             addMessage("Error retrieving credentials.", "wayfinder");
             return;
           }
@@ -135,7 +141,7 @@
               }
             })
             .catch(err => {
-              console.error("Lex Error:", JSON.stringify(err, null, 2));
+              console.error("❌ Lex Error:", JSON.stringify(err, null, 2));
               addMessage(`Error: ${err.message}`, "wayfinder");
             });
         });
@@ -144,7 +150,7 @@
       function addMessage(text, sender) {
         const chatWindow = document.getElementById("chatWindow");
         if (!chatWindow) {
-          console.error("Chat window not found!");
+          console.error("❌ Chat window not found!");
           return;
         }
 
@@ -161,14 +167,14 @@
         chatWindow.scrollTop = chatWindow.scrollHeight;
       }
 
-      // Attach event listeners
+      // ✅ Attach event listeners
       const sendBtn = document.getElementById("sendBtn");
       const userMessageInput = document.getElementById("userMessage");
 
       if (sendBtn) {
         sendBtn.addEventListener("click", sendMessage);
       } else {
-        console.error("Send button not found!");
+        console.error("❌ Send button not found!");
       }
 
       if (userMessageInput) {
@@ -178,7 +184,7 @@
           }
         });
       } else {
-        console.error("User message input field not found!");
+        console.error("❌ User message input field not found!");
       }
     });
   </script>
