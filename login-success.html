@@ -5,17 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login Success</title>
 
-  <!-- 
-    ADDED/UPDATED: Load AWS SDK first 
-    (Required by Cognito Identity for certain features)
-  -->
-  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1030.0.min.js"></script>
-
-  <!-- 
-    ADDED/UPDATED: Load Amazon Cognito Identity JS after AWS SDK 
-    (Prevents "AmazonCognitoIdentity is not defined" errors)
-  -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/amazon-cognito-identity-js/5.2.9/amazon-cognito-identity.min.js"></script>
+  <!-- Load AWS SDK and Cognito SDK with defer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1030.0/aws-sdk.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/amazon-cognito-identity-js/5.2.9/amazon-cognito-identity.min.js" defer></script>
 
   <style>
     body {
@@ -64,26 +56,35 @@
   <input type="text" id="userMessage" placeholder="Type a message..." />
   <button id="sendBtn">Send</button>
 
-  <!-- JavaScript to Handle Cognito Authentication and Amazon Lex -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       console.log("Page fully loaded, initializing scripts...");
 
-      // Check if the Cognito SDK is loaded
-      if (typeof AmazonCognitoIdentity === "undefined") {
-        console.error("AmazonCognitoIdentity is not defined! Ensure the SDK is loaded in the <head>.");
-        return;
+      function initializeCognito() {
+        console.log("Cognito SDK is loaded. Proceeding with initialization.");
+
+        // Configure AWS region
+        AWS.config.region = "us-east-2"; 
+
+        // Cognito User Pool configuration
+        const poolData = {
+          UserPoolId: "us-east-2_ikBSA6JCg",
+          ClientId: "5mau62v6fu7ir4ealb8j4tmpld"
+        };
+        window.userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
       }
 
-      // Configure AWS region
-      AWS.config.region = "us-east-2"; 
-
-      // Cognito User Pool configuration
-      const poolData = {
-        UserPoolId: "us-east-2_ikBSA6JCg", // Your Cognito User Pool ID
-        ClientId: "5mau62v6fu7ir4ealb8j4tmpld" // Your Cognito App Client ID
-      };
-      window.userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+      // Wait for Cognito SDK to be available before initializing
+      function checkCognitoReady() {
+        if (typeof AmazonCognitoIdentity === "undefined") {
+          console.error("AmazonCognitoIdentity is still not defined. Retrying...");
+          setTimeout(checkCognitoReady, 1000);
+        } else {
+          console.log("AmazonCognitoIdentity is now available.");
+          initializeCognito();
+        }
+      }
+      checkCognitoReady();
 
       // Function to send messages to Amazon Lex
       async function sendMessage() {
@@ -94,9 +95,8 @@
           return;
         }
 
-        // Set up AWS credentials with your Identity Pool ID.
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-          IdentityPoolId: "us-east-2:6b3d8ba3-916b-472d-816f-b89a4924fa1a", // Your Identity Pool ID
+          IdentityPoolId: "us-east-2:6b3d8ba3-916b-472d-816f-b89a4924fa1a",
           Logins: {
             "cognito-idp.us-east-2.amazonaws.com/us-east-2_ikBSA6JCg": token
           }
@@ -114,7 +114,6 @@
         addMessage(message, "user");
         userMessageInput.value = "";
 
-        // Refresh credentials before invoking Lex.
         AWS.config.credentials.get(function (err) {
           if (err) {
             console.error("Error retrieving credentials:", err);
@@ -124,10 +123,10 @@
 
           const lexRuntime = new AWS.LexRuntimeV2();
           const params = {
-            botId: "M6KGIA0V21",  // Your Amazon Lex Bot ID
-            botAliasId: "TSTALIASID", // Your Bot Alias ID
+            botId: "M6KGIA0V21",
+            botAliasId: "TSTALIASID",
             localeId: "en_US",
-            sessionId: "user-session",
+            sessionId: Date.now().toString(), 
             text: message
           };
 
@@ -140,8 +139,8 @@
               }
             })
             .catch(err => {
-              console.error("Error communicating with Amazon Lex:", err);
-              addMessage("Error communicating with Amazon Lex.", "wayfinder");
+              console.error("Lex Error:", JSON.stringify(err, null, 2));
+              addMessage(`Error: ${err.message}`, "wayfinder");
             });
         });
       }
@@ -166,7 +165,7 @@
         chatWindow.scrollTop = chatWindow.scrollHeight;
       }
 
-      // Attach event listeners for the send button and input field
+      // Attach event listeners
       const sendBtn = document.getElementById("sendBtn");
       const userMessageInput = document.getElementById("userMessage");
 
