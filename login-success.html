@@ -23,8 +23,8 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             border-radius: 20px;
             width: 600px;
-            text-align: center; /* Center content */
-            border: 5.625px solid #ff5733; /* Increased by 125% */
+            text-align: center;
+            border: 5.625px solid #ff5733;
             transform-origin: bottom left;
             animation: expandPopup 0.5s ease-out forwards;
         }
@@ -45,19 +45,37 @@
             font-weight: bold;
             font-size: 2em;
             color: #1f497d;
+            border: none;
+            background: none;
+            text-align: center;
+            width: 90%;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            margin-top: 15px;
+            width: 100%;
         }
         .button {
-            background-color: #1f497d;
             color: white;
             padding: 10px 20px;
             border: none;
             cursor: pointer;
             border-radius: 5px;
-            margin-top: 10px;
             font-size: 1em;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
+            width: 150px;
+            text-align: center;
+        }
+        .verified-button {
+            background-color: #1f497d;
+        }
+        .update-button {
+            background-color: #28a745;
+        }
+        .editable {
+            border-bottom: 2px solid #1f497d;
+            cursor: text;
         }
     </style>
 </head>
@@ -69,9 +87,15 @@
             <span style="color: #1f497d; font-size: 1.5em; font-weight: bold;">AI Assistant</span>
         </div>
         <p>Wayfinder AI: I see it's your first time visiting your ISNetworld portal. Before you start working on your RAVS, let's double check that your records match what you provided to ISNetworld. I have your name as:</p>
-        <p class="company-name">Sam's Ladder Company LLC</p>
-        <p>in my system. If they don't match, your RAVS will get kicked back. Double check and then click "Verified" below.</p>
-        <button class="button" onclick="closePopup()">Verified</button>
+        
+        <input type="text" id="companyName" class="company-name editable" value="Sam's Ladder Company LLC">
+        
+        <p>in my system. If they don't match, your RAVS will get kicked back. Double check and then click "Verified" or "Update" below.</p>
+        
+        <div class="button-container">
+            <button class="button verified-button" onclick="closePopup()">Verified</button>
+            <button class="button update-button" onclick="updateInfo()">Update</button>
+        </div>
     </div>
 
     <script>
@@ -85,6 +109,11 @@
         function closePopup() {
             document.getElementById('popup').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
+        }
+
+        function updateInfo() {
+            let companyInput = document.getElementById('companyName');
+            companyInput.focus();
         }
     </script>
 </body>
