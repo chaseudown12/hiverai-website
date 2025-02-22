@@ -3,171 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Popup Animation</title>
+    <title>Site Page with Chatbot Mk1</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
-        
         body {
             margin: 0;
             padding: 0;
             background: url('isnetworld.png') no-repeat center center fixed;
             background-size: cover;
+            font-family: 'Montserrat', sans-serif;
         }
-        .popup {
+
+        .chat-popup {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 0;
-            height: 0;
+            height: auto;
+            max-width: 50%;
             background: white;
-            border: 10px solid #CB5B59;
-            border-radius: 20px;
+            border: 5px solid #cb5b5d;
+            border-radius: 15px;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: start;
-            transition: width 1s ease-out, height 1s ease-out;
-            text-align: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
             padding: 20px;
-        }
-        .popup img {
-            width: 15%; /* Increased by 50% from previous 10% */
-            margin-top: 20px;
-        }
-        .popup p {
-            text-align: left;
-            color: #4e6b89;
-            font-size: 18px;
-            font-weight: bold;
-            font-family: 'Montserrat', sans-serif;
-            margin-top: 20px;
-        }
-        .company-name {
-            font-size: 50px;
-            color: black;
-            font-weight: bold;
-            text-align: left;
-            margin-top: 10px;
             display: none;
+            transition: width 1s ease-in-out;
         }
-        .user-message {
-            text-align: left;
-            color: black;
-            font-size: 18px;
-            font-weight: bold;
-            font-family: 'Montserrat', sans-serif;
-            margin-top: 25px;
-            display: none;
+
+        .chat-logo {
+            display: block;
+            margin: 0 auto;
+            width: 40%;
+            height: auto;
         }
-        .user-input-container {
-            display: none;
-            position: absolute;
-            bottom: 50px;
-            width: 90%;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .user-label {
-            font-size: 18px;
-            font-weight: bold;
-            font-family: 'Montserrat', sans-serif;
-            color: #CB5B59;
-            margin-right: 10px;
-        }
-        .user-input {
-            flex: 1;
-            padding: 8px;
-            font-size: 16px;
-            border: 2px solid #CB5B5D;
+
+        .chat-output, .chat-input {
+            width: calc(100% - 20px);
+            margin: 10px auto;
+            padding: 10px;
             border-radius: 10px;
-            outline: none;
+            border: 1px solid #cb5b5d;
+            font-family: 'Montserrat', bold;
+            color: #4e6b89;
         }
-        .send-button {
-            margin-left: 10px;
-            background-color: #CB5B5D;
+
+        .chat-output {
+            background: #f1f1f1;
+            min-height: 100px;
+        }
+
+        .chat-input {
+            background: #ffffff;
+            min-height: 40px;
+        }
+
+        .chat-button {
+            display: block;
+            width: 50%;
+            margin: 10px auto;
+            padding: 10px;
+            background: #cb5b5d;
             color: white;
-            font-size: 16px;
-            padding: 8px 16px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-        }
-        .send-button:hover {
-            background-color: #b04a4a;
-        }
-        @media (min-width: 1024px) {
-            .popup.open {
-                width: 50vw;
-                min-height: 50vh;
-                max-height: 90vh;
-                overflow-y: auto;
-            }
-        }
-        @media (max-width: 1023px) {
-            .popup.open {
-                width: 100%;
-                height: 100%;
-            }
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="popup" id="popup">
-        <img src="wayfinderlogo.png" alt="Wayfinder Logo">
-        <p id="companyText"></p>
-        <p class="company-name" id="companyName"></p>
-        <p class="user-message" id="userMessage"></p>
-        <div class="user-input-container" id="userInputContainer">
-            <span class="user-label">User:</span>
-            <input type="text" class="user-input" id="userInput" placeholder="Enter text...">
-            <button class="send-button" onclick="submitMessage()">Send</button>
-        </div>
+    <div id="chatPopup" class="chat-popup">
+        <img src="wayfinderlogo.png" alt="Wayfinder AI" class="chat-logo">
+        <div class="chat-output" id="chatOutput">Wayfinder Virtual Assistant: Hello, how are you today?</div>
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
+        <button class="chat-button" onclick="sendMessage()">Send</button>
     </div>
 
     <script>
-        function submitMessage() {
-            let userInput = document.getElementById("userInput").value;
-            if (userInput.trim() !== "") {
-                document.getElementById("userMessage").innerHTML = userInput;
-                document.getElementById("userMessage").style.display = "block";
-                document.getElementById("userInput").value = "";
+        setTimeout(() => {
+            let chatPopup = document.getElementById('chatPopup');
+            chatPopup.style.display = 'block';
+            chatPopup.style.width = '50%';
+        }, 1000);
+
+        function sendMessage() {
+            let inputBox = document.getElementById('chatInput');
+            let outputBox = document.getElementById('chatOutput');
+            let userMessage = inputBox.value;
+            if (userMessage.trim() !== '') {
+                outputBox.innerHTML += '<br><strong>User:</strong> ' + userMessage;
+                inputBox.value = '';
             }
         }
-
-        window.onload = function() {
-            setTimeout(function() {
-                let popup = document.getElementById("popup");
-                popup.style.width = "50vw";
-                popup.style.height = "50vh";
-                let text = `Wayfinder AI: Welcome to our ISNetworld portal, before you can start downloading your RAVS we need to verify your company's name matches what ISNetworld has. If they don't match, your RAVS will get rejected. This is what we have on record with Owyn Safety:`;
-                let companyName = "Tim's Roofing LLC";
-                let i = 0;
-                function typeWriter() {
-                    if (i < text.length) {
-                        document.getElementById("companyText").innerHTML += text.charAt(i);
-                        i++;
-                        setTimeout(typeWriter, 37);
-                    } else {
-                        let j = 0;
-                        function typeCompanyName() {
-                            if (j < companyName.length) {
-                                document.getElementById("companyName").innerHTML += companyName.charAt(j);
-                                j++;
-                                setTimeout(typeCompanyName, 37);
-                            } else {
-                                document.getElementById("userInputContainer").style.display = "flex";
-                            }
-                        }
-                        document.getElementById("companyName").style.display = "block";
-                        typeCompanyName();
-                    }
-                }
-                typeWriter();
-            }, 1000);
-        };
     </script>
 </body>
 </html>
