@@ -23,8 +23,8 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             border-radius: 20px;
             width: 600px;
-            text-align: left;
-            border: 2.5px solid #ff5733;
+            text-align: center; /* Center content */
+            border: 5.625px solid #ff5733; /* Increased by 125% */
             transform-origin: bottom left;
             animation: expandPopup 0.5s ease-out forwards;
         }
@@ -55,13 +55,19 @@
             border-radius: 5px;
             margin-top: 10px;
             font-size: 1em;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
 </head>
 <body>
     <div id="overlay"></div>
     <div id="popup">
-        <div style="text-align: center;"><img src="wayfinderlogo.png" alt="Wayfinder Logo" style="height: 50px; vertical-align: middle;"> <span style="color: #1f497d; font-size: 1.5em; font-weight: bold;">AI Assistant</span></div>
+        <div style="text-align: center;">
+            <img src="wayfinderlogo.png" alt="Wayfinder Logo" style="height: 50px; vertical-align: middle;"> 
+            <span style="color: #1f497d; font-size: 1.5em; font-weight: bold;">AI Assistant</span>
+        </div>
         <p>Wayfinder AI: I see it's your first time visiting your ISNetworld portal. Before you start working on your RAVS, let's double check that your records match what you provided to ISNetworld. I have your name as:</p>
         <p class="company-name">Sam's Ladder Company LLC</p>
         <p>in my system. If they don't match, your RAVS will get kicked back. Double check and then click "Verified" below.</p>
