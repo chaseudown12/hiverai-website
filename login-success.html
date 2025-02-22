@@ -75,10 +75,10 @@
             display: none;
             position: fixed;
             bottom: 20px;
-            right: 20px;
+            left: 20px;
             cursor: pointer;
-            width: 60px;
-            height: 60px;
+            width: 300px;
+            height: 300px;
         }
     </style>
 </head>
@@ -105,25 +105,6 @@
     <img id="floatingButton" src="wayfinderlogo.png" alt="Wayfinder" onclick="handleFloatingButtonClick()">
 
     <script>
-        function enableEditing() {
-            let companyInput = document.getElementById('companyName');
-            let saveButton = document.getElementById('saveButton');
-
-            companyInput.removeAttribute('disabled');
-            companyInput.focus();
-            saveButton.style.display = "inline-block";
-            saveButton.removeAttribute('disabled');
-        }
-
-        function saveCompanyName() {
-            let companyInput = document.getElementById('companyName');
-            let saveButton = document.getElementById('saveButton');
-            let newCompanyName = companyInput.value.trim();
-            companyInput.setAttribute('disabled', true);
-            saveButton.style.display = "none";
-            alert("Company name updated to: " + newCompanyName);
-        }
-
         function handleVerified() {
             document.getElementById('popup').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
@@ -134,14 +115,6 @@
             document.getElementById('popup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
-
-        window.onload = function() {
-            document.getElementById('companyName').value = "Elite Combustion Solutions";
-            setTimeout(function() {
-                document.getElementById('popup').style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
-            }, 1500);
-        };
     </script>
 </body>
 </html>
