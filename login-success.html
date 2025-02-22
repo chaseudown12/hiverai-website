@@ -32,20 +32,78 @@
             padding: 20px;
         }
         .popup img {
-            width: 50%;
+            width: 15%; /* Increased by 50% from previous 10% */
             margin-top: 20px;
         }
         .popup p {
+            text-align: left;
             color: #4e6b89;
-            font-size: 25px;
+            font-size: 18px;
             font-weight: bold;
             font-family: 'Montserrat', sans-serif;
             margin-top: 20px;
         }
+        .company-name {
+            font-size: 50px;
+            color: black;
+            font-weight: bold;
+            text-align: left;
+            margin-top: 10px;
+            display: none;
+        }
+        .user-message {
+            text-align: left;
+            color: black;
+            font-size: 18px;
+            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+            margin-top: 25px;
+            display: none;
+        }
+        .user-input-container {
+            display: none;
+            position: absolute;
+            bottom: 50px;
+            width: 90%;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .user-label {
+            font-size: 18px;
+            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+            color: #CB5B59;
+            margin-right: 10px;
+        }
+        .user-input {
+            flex: 1;
+            padding: 8px;
+            font-size: 16px;
+            border: 2px solid #CB5B5D;
+            border-radius: 10px;
+            outline: none;
+        }
+        .send-button {
+            margin-left: 10px;
+            background-color: #CB5B5D;
+            color: white;
+            font-size: 16px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .send-button:hover {
+            background-color: #b04a4a;
+        }
         @media (min-width: 1024px) {
             .popup.open {
                 width: 50vw;
-                height: 50vh;
+                min-height: 50vh;
+                max-height: 90vh;
+                overflow-y: auto;
             }
         }
         @media (max-width: 1023px) {
@@ -60,12 +118,23 @@
     <div class="popup" id="popup">
         <img src="wayfinderlogo.png" alt="Wayfinder Logo">
         <p id="companyText"></p>
+        <p class="company-name" id="companyName"></p>
+        <p class="user-message" id="userMessage"></p>
+        <div class="user-input-container" id="userInputContainer">
+            <span class="user-label">User:</span>
+            <input type="text" class="user-input" id="userInput" placeholder="Enter text...">
+            <button class="send-button" onclick="submitMessage()">Send</button>
+        </div>
     </div>
 
     <script>
-        function getRandomCompany() {
-            const companies = ["Alpha Corp", "Beta Ltd", "Gamma Industries", "Delta Solutions", "Epsilon LLC", "Zeta Group", "Eta Enterprises", "Theta Services", "Iota Systems", "Kappa Innovations", "Lambda Consulting", "Mu Manufacturing", "Nu Networks", "Xi Tech", "Omicron Development", "Pi Logistics", "Rho Marketing", "Sigma Analytics", "Tau Finance", "Upsilon Retail", "Phi Construction", "Chi Healthcare", "Psi Energy", "Omega Transport", "Apex Dynamics", "Summit Global", "Zenith Technologies", "Pinnacle Software", "Vertex Engineering", "Horizon Security"];
-            return companies[Math.floor(Math.random() * companies.length)];
+        function submitMessage() {
+            let userInput = document.getElementById("userInput").value;
+            if (userInput.trim() !== "") {
+                document.getElementById("userMessage").innerHTML = userInput;
+                document.getElementById("userMessage").style.display = "block";
+                document.getElementById("userInput").value = "";
+            }
         }
 
         window.onload = function() {
@@ -73,7 +142,30 @@
                 let popup = document.getElementById("popup");
                 popup.style.width = "50vw";
                 popup.style.height = "50vh";
-                document.getElementById("companyText").innerHTML = `Wayfinder AI: Welcome to our ISNetworld portal, before you can start downloading your RAVS we need to verify a little information is your company name:`;
+                let text = `Wayfinder AI: Welcome to our ISNetworld portal, before you can start downloading your RAVS we need to verify your company's name matches what ISNetworld has. If they don't match, your RAVS will get rejected. This is what we have on record with Owyn Safety:`;
+                let companyName = "Tim's Roofing LLC";
+                let i = 0;
+                function typeWriter() {
+                    if (i < text.length) {
+                        document.getElementById("companyText").innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, 37);
+                    } else {
+                        let j = 0;
+                        function typeCompanyName() {
+                            if (j < companyName.length) {
+                                document.getElementById("companyName").innerHTML += companyName.charAt(j);
+                                j++;
+                                setTimeout(typeCompanyName, 37);
+                            } else {
+                                document.getElementById("userInputContainer").style.display = "flex";
+                            }
+                        }
+                        document.getElementById("companyName").style.display = "block";
+                        typeCompanyName();
+                    }
+                }
+                typeWriter();
             }, 1000);
         };
     </script>
