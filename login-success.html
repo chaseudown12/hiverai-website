@@ -64,7 +64,7 @@
             cursor: pointer;
             border-radius: 5px;
             font-size: 1em;
-            width: 150px;
+            width: 120px;
             text-align: center;
         }
         .verified-button {
@@ -72,6 +72,10 @@
         }
         .update-button {
             background-color: #28a745;
+        }
+        .save-button {
+            background-color: #d9534f; /* Red button */
+            display: none;
         }
         .editable {
             border-bottom: 2px solid #1f497d;
@@ -88,17 +92,37 @@
         </div>
         <p>Wayfinder AI: I see it's your first time visiting your ISNetworld portal. Before you start working on your RAVS, let's double check that your records match what you provided to ISNetworld. I have your name as:</p>
         
-        <input type="text" id="companyName" class="company-name editable" value="Sam's Ladder Company LLC">
+        <input type="text" id="companyName" class="company-name editable" value="Sam's Ladder Company LLC" disabled>
         
         <p>in my system. If they don't match, your RAVS will get kicked back. Double check and then click "Verified" or "Update" below.</p>
         
         <div class="button-container">
             <button class="button verified-button" onclick="closePopup()">Verified</button>
-            <button class="button update-button" onclick="updateInfo()">Update</button>
+            <button class="button update-button" onclick="enableEditing()">Update</button>
+            <button class="button save-button" id="saveButton" onclick="saveCompanyName()" disabled>Save</button>
         </div>
     </div>
 
     <script>
+        function enableEditing() {
+            let companyInput = document.getElementById('companyName');
+            let saveButton = document.getElementById('saveButton');
+
+            companyInput.removeAttribute('disabled'); // Enable text editing
+            companyInput.focus(); // Cursor appears
+            saveButton.style.display = "inline-block"; // Show save button
+            saveButton.removeAttribute('disabled'); // Enable save button
+        }
+
+        function saveCompanyName() {
+            let companyInput = document.getElementById('companyName');
+            let saveButton = document.getElementById('saveButton');
+
+            companyInput.setAttribute('disabled', true); // Disable editing again
+            saveButton.style.display = "none"; // Hide save button
+            alert("Company name updated to: " + companyInput.value);
+        }
+
         window.onload = function() {
             setTimeout(function() {
                 document.getElementById('popup').style.display = 'block';
@@ -109,11 +133,6 @@
         function closePopup() {
             document.getElementById('popup').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
-        }
-
-        function updateInfo() {
-            let companyInput = document.getElementById('companyName');
-            companyInput.focus();
         }
     </script>
 </body>
