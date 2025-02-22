@@ -25,8 +25,6 @@
             width: 600px;
             text-align: center;
             border: 5.625px solid #ff5733;
-            transform-origin: bottom left;
-            animation: expandPopup 0.5s ease-out forwards;
         }
         #overlay {
             display: none;
@@ -73,13 +71,22 @@
             background-color: #d9534f;
             display: none;
         }
+        #floatingButton {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            cursor: pointer;
+            width: 60px;
+            height: 60px;
+        }
     </style>
 </head>
 <body>
     <div id="overlay"></div>
     <div id="popup">
         <div style="text-align: center;">
-            <img src="wayfinderlogo.png" alt="Wayfinder Logo" style="height: 50px; vertical-align: middle;"> 
+            <img src="unicorn.png" alt="Unicorn" style="height: 50px; vertical-align: middle;"> 
             <span style="color: #1f497d; font-size: 1.5em; font-weight: bold;">AI Assistant</span>
         </div>
         <p>Wayfinder AI: I see it's your first time visiting your ISNetworld portal. Before you start working on your RAVS, let's double check that your records match what you provided to ISNetworld. I have your name as:</p>
@@ -89,89 +96,52 @@
         <p>in my system. If they don't match, your RAVS will get kicked back. Double check and then click "Verified" or "Update" below.</p>
         
         <div class="button-container">
-            <button class="button verified-button" onclick="closePopup()">Verified</button>
+            <button class="button verified-button" onclick="handleVerified()">Verified</button>
             <button class="button update-button" onclick="enableEditing()">Update</button>
             <button class="button save-button" id="saveButton" onclick="saveCompanyName()" disabled>Save</button>
         </div>
     </div>
 
+    <img id="floatingButton" src="wayfinderlogo.png" alt="Wayfinder" onclick="handleFloatingButtonClick()">
+
     <script>
-        // Default list of company names
-        let defaultCompanyNames = [
-            "Smith & Sons Contractors", "Elite Roofing Solutions", "Pioneer Welding Co.", 
-            "Titan Industrial Services", "Evergreen Landscaping LLC", "NorthStar Energy Solutions",
-            "Precision Electrical Works", "Global Manufacturing Ltd.", "Summit Safety Inspections", 
-            "FastTrack Logistics Inc.", "Vertex Engineering Group", "Mountain Peak Construction",
-            "Infinity Mechanical Services", "ProBuild Contractors LLC", "NextGen Industrial Tech",
-            "Reliable Heavy Equipment Co.", "Skyline Drilling Services", "Zenith Automation Systems",
-            "TopTier Industrial Coatings", "Peak Performance Industries", "Omega Welding & Fabrication",
-            "Vanguard HVAC Solutions", "Eagle Eye Security Services", "Nexus Pipeline Solutions",
-            "Summit Concrete & Masonry", "Everlast Power Systems", "Stratus Renewable Energy",
-            "RockSolid Mining Equipment", "Genesis Structural Engineering", "IronClad Metal Works"
-        ];
-
-        function getStoredCompanyNames() {
-            let storedNames = JSON.parse(localStorage.getItem("companyNames"));
-            return storedNames ? storedNames : [...defaultCompanyNames];
-        }
-
-        function saveCompanyNames(names) {
-            localStorage.setItem("companyNames", JSON.stringify(names));
-        }
-
-        function getRandomCompanyName() {
-            let companyNames = getStoredCompanyNames();
-            let randomIndex = Math.floor(Math.random() * companyNames.length);
-            return companyNames[randomIndex];
-        }
-
         function enableEditing() {
             let companyInput = document.getElementById('companyName');
             let saveButton = document.getElementById('saveButton');
 
-            companyInput.removeAttribute('disabled'); // Enable text editing
-            companyInput.focus(); // Cursor appears
-            saveButton.style.display = "inline-block"; // Show save button
-            saveButton.removeAttribute('disabled'); // Enable save button
+            companyInput.removeAttribute('disabled');
+            companyInput.focus();
+            saveButton.style.display = "inline-block";
+            saveButton.removeAttribute('disabled');
         }
 
         function saveCompanyName() {
             let companyInput = document.getElementById('companyName');
             let saveButton = document.getElementById('saveButton');
-
-            let companyNames = getStoredCompanyNames();
             let newCompanyName = companyInput.value.trim();
-
-            if (newCompanyName && !companyNames.includes(newCompanyName)) {
-                companyNames.push(newCompanyName);
-
-                // If the list exceeds 100 names, remove the last 25 entries
-                if (companyNames.length > 100) {
-                    companyNames.splice(0, 25);
-                }
-
-                saveCompanyNames(companyNames);
-            }
-
-            companyInput.setAttribute('disabled', true); // Disable editing again
-            saveButton.style.display = "none"; // Hide save button
+            companyInput.setAttribute('disabled', true);
+            saveButton.style.display = "none";
             alert("Company name updated to: " + newCompanyName);
         }
 
-        window.onload = function() {
-            // Assign a random company name on load
-            document.getElementById('companyName').value = getRandomCompanyName();
+        function handleVerified() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('floatingButton').style.display = 'block';
+        }
 
+        function handleFloatingButtonClick() {
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        window.onload = function() {
+            document.getElementById('companyName').value = "Elite Combustion Solutions";
             setTimeout(function() {
                 document.getElementById('popup').style.display = 'block';
                 document.getElementById('overlay').style.display = 'block';
             }, 1500);
         };
-
-        function closePopup() {
-            document.getElementById('popup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
     </script>
 </body>
 </html>
