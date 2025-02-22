@@ -74,7 +74,7 @@
             background-color: #28a745;
         }
         .save-button {
-            background-color: #d9534f; /* Red button */
+            background-color: #d9534f;
             display: none;
         }
         .editable {
@@ -92,7 +92,7 @@
         </div>
         <p>Wayfinder AI: I see it's your first time visiting your ISNetworld portal. Before you start working on your RAVS, let's double check that your records match what you provided to ISNetworld. I have your name as:</p>
         
-        <input type="text" id="companyName" class="company-name editable" value="Sam's Ladder Company LLC" disabled>
+        <input type="text" id="companyName" class="company-name editable" disabled>
         
         <p>in my system. If they don't match, your RAVS will get kicked back. Double check and then click "Verified" or "Update" below.</p>
         
@@ -104,6 +104,45 @@
     </div>
 
     <script>
+        // List of 30 random company names
+        const companyNames = [
+            "Smith & Sons Contractors",
+            "Elite Roofing Solutions",
+            "Pioneer Welding Co.",
+            "Titan Industrial Services",
+            "Evergreen Landscaping LLC",
+            "NorthStar Energy Solutions",
+            "Precision Electrical Works",
+            "Global Manufacturing Ltd.",
+            "Summit Safety Inspections",
+            "FastTrack Logistics Inc.",
+            "Vertex Engineering Group",
+            "Mountain Peak Construction",
+            "Infinity Mechanical Services",
+            "ProBuild Contractors LLC",
+            "NextGen Industrial Tech",
+            "Reliable Heavy Equipment Co.",
+            "Skyline Drilling Services",
+            "Zenith Automation Systems",
+            "TopTier Industrial Coatings",
+            "Peak Performance Industries",
+            "Omega Welding & Fabrication",
+            "Vanguard HVAC Solutions",
+            "Eagle Eye Security Services",
+            "Nexus Pipeline Solutions",
+            "Summit Concrete & Masonry",
+            "Everlast Power Systems",
+            "Stratus Renewable Energy",
+            "RockSolid Mining Equipment",
+            "Genesis Structural Engineering",
+            "IronClad Metal Works"
+        ];
+
+        function getRandomCompanyName() {
+            let randomIndex = Math.floor(Math.random() * companyNames.length);
+            return companyNames[randomIndex];
+        }
+
         function enableEditing() {
             let companyInput = document.getElementById('companyName');
             let saveButton = document.getElementById('saveButton');
@@ -124,6 +163,9 @@
         }
 
         window.onload = function() {
+            // Assign a random company name on load
+            document.getElementById('companyName').value = getRandomCompanyName();
+
             setTimeout(function() {
                 document.getElementById('popup').style.display = 'block';
                 document.getElementById('overlay').style.display = 'block';
