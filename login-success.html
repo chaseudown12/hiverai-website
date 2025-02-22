@@ -28,10 +28,6 @@
             transform-origin: bottom left;
             animation: expandPopup 0.5s ease-out forwards;
         }
-        @keyframes expandPopup {
-            0% { transform: scale(0.2); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
         #overlay {
             display: none;
             position: fixed;
@@ -77,10 +73,6 @@
             background-color: #d9534f;
             display: none;
         }
-        .editable {
-            border-bottom: 2px solid #1f497d;
-            cursor: text;
-        }
     </style>
 </head>
 <body>
@@ -92,7 +84,7 @@
         </div>
         <p>Wayfinder AI: I see it's your first time visiting your ISNetworld portal. Before you start working on your RAVS, let's double check that your records match what you provided to ISNetworld. I have your name as:</p>
         
-        <input type="text" id="companyName" class="company-name editable" disabled>
+        <input type="text" id="companyName" class="company-name" disabled>
         
         <p>in my system. If they don't match, your RAVS will get kicked back. Double check and then click "Verified" or "Update" below.</p>
         
@@ -104,41 +96,31 @@
     </div>
 
     <script>
-        // List of 30 random company names
-        const companyNames = [
-            "Smith & Sons Contractors",
-            "Elite Roofing Solutions",
-            "Pioneer Welding Co.",
-            "Titan Industrial Services",
-            "Evergreen Landscaping LLC",
-            "NorthStar Energy Solutions",
-            "Precision Electrical Works",
-            "Global Manufacturing Ltd.",
-            "Summit Safety Inspections",
-            "FastTrack Logistics Inc.",
-            "Vertex Engineering Group",
-            "Mountain Peak Construction",
-            "Infinity Mechanical Services",
-            "ProBuild Contractors LLC",
-            "NextGen Industrial Tech",
-            "Reliable Heavy Equipment Co.",
-            "Skyline Drilling Services",
-            "Zenith Automation Systems",
-            "TopTier Industrial Coatings",
-            "Peak Performance Industries",
-            "Omega Welding & Fabrication",
-            "Vanguard HVAC Solutions",
-            "Eagle Eye Security Services",
-            "Nexus Pipeline Solutions",
-            "Summit Concrete & Masonry",
-            "Everlast Power Systems",
-            "Stratus Renewable Energy",
-            "RockSolid Mining Equipment",
-            "Genesis Structural Engineering",
-            "IronClad Metal Works"
+        // Default list of company names
+        let defaultCompanyNames = [
+            "Smith & Sons Contractors", "Elite Roofing Solutions", "Pioneer Welding Co.", 
+            "Titan Industrial Services", "Evergreen Landscaping LLC", "NorthStar Energy Solutions",
+            "Precision Electrical Works", "Global Manufacturing Ltd.", "Summit Safety Inspections", 
+            "FastTrack Logistics Inc.", "Vertex Engineering Group", "Mountain Peak Construction",
+            "Infinity Mechanical Services", "ProBuild Contractors LLC", "NextGen Industrial Tech",
+            "Reliable Heavy Equipment Co.", "Skyline Drilling Services", "Zenith Automation Systems",
+            "TopTier Industrial Coatings", "Peak Performance Industries", "Omega Welding & Fabrication",
+            "Vanguard HVAC Solutions", "Eagle Eye Security Services", "Nexus Pipeline Solutions",
+            "Summit Concrete & Masonry", "Everlast Power Systems", "Stratus Renewable Energy",
+            "RockSolid Mining Equipment", "Genesis Structural Engineering", "IronClad Metal Works"
         ];
 
+        function getStoredCompanyNames() {
+            let storedNames = JSON.parse(localStorage.getItem("companyNames"));
+            return storedNames ? storedNames : [...defaultCompanyNames];
+        }
+
+        function saveCompanyNames(names) {
+            localStorage.setItem("companyNames", JSON.stringify(names));
+        }
+
         function getRandomCompanyName() {
+            let companyNames = getStoredCompanyNames();
             let randomIndex = Math.floor(Math.random() * companyNames.length);
             return companyNames[randomIndex];
         }
@@ -157,9 +139,23 @@
             let companyInput = document.getElementById('companyName');
             let saveButton = document.getElementById('saveButton');
 
+            let companyNames = getStoredCompanyNames();
+            let newCompanyName = companyInput.value.trim();
+
+            if (newCompanyName && !companyNames.includes(newCompanyName)) {
+                companyNames.push(newCompanyName);
+
+                // If the list exceeds 100 names, remove the last 25 entries
+                if (companyNames.length > 100) {
+                    companyNames.splice(0, 25);
+                }
+
+                saveCompanyNames(companyNames);
+            }
+
             companyInput.setAttribute('disabled', true); // Disable editing again
             saveButton.style.display = "none"; // Hide save button
-            alert("Company name updated to: " + companyInput.value);
+            alert("Company name updated to: " + newCompanyName);
         }
 
         window.onload = function() {
