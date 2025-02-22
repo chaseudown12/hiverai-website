@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Popup Animation</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+        
         body {
             margin: 0;
             padding: 0;
@@ -26,23 +28,30 @@
             align-items: center;
             justify-content: start;
             transition: width 1s ease-out, height 1s ease-out;
+            text-align: center;
+            padding: 20px;
         }
         .popup img {
             width: 50%;
             margin-top: 20px;
         }
-        
-        @media (min-width: 768px) {
+        .popup p {
+            color: #4e6b89;
+            font-size: 25px;
+            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+            margin-top: 20px;
+        }
+        @media (min-width: 1024px) {
             .popup.open {
-                width: 25vw;
-                height: 25vh;
+                width: 50vw;
+                height: 50vh;
             }
         }
-        
-        @media (max-width: 767px) {
+        @media (max-width: 1023px) {
             .popup.open {
-                width: 100vw;
-                height: 100vh;
+                width: 100%;
+                height: 100%;
             }
         }
     </style>
@@ -50,12 +59,21 @@
 <body>
     <div class="popup" id="popup">
         <img src="wayfinderlogo.png" alt="Wayfinder Logo">
+        <p id="companyText"></p>
     </div>
 
     <script>
+        function getRandomCompany() {
+            const companies = ["Alpha Corp", "Beta Ltd", "Gamma Industries", "Delta Solutions", "Epsilon LLC", "Zeta Group", "Eta Enterprises", "Theta Services", "Iota Systems", "Kappa Innovations", "Lambda Consulting", "Mu Manufacturing", "Nu Networks", "Xi Tech", "Omicron Development", "Pi Logistics", "Rho Marketing", "Sigma Analytics", "Tau Finance", "Upsilon Retail", "Phi Construction", "Chi Healthcare", "Psi Energy", "Omega Transport", "Apex Dynamics", "Summit Global", "Zenith Technologies", "Pinnacle Software", "Vertex Engineering", "Horizon Security"];
+            return companies[Math.floor(Math.random() * companies.length)];
+        }
+
         window.onload = function() {
             setTimeout(function() {
-                document.getElementById("popup").classList.add("open");
+                let popup = document.getElementById("popup");
+                popup.style.width = "50vw";
+                popup.style.height = "50vh";
+                document.getElementById("companyText").innerHTML = `Wayfinder AI: Welcome to our ISNetworld portal, before you can start downloading your RAVS we need to verify a little information is your company name:`;
             }, 1000);
         };
     </script>
