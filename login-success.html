@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Site Page with Chatbot Mk1</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+        
         body {
             margin: 0;
             padding: 0;
             background: url('isnetworld.png') no-repeat center center fixed;
             background-size: cover;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Montserrat', bold;
         }
 
         .chat-popup {
@@ -28,6 +30,7 @@
             padding: 20px;
             display: none;
             transition: width 1s ease-in-out;
+            text-align: center;
         }
 
         .chat-logo {
@@ -68,15 +71,16 @@
             border-radius: 10px;
             cursor: pointer;
             text-align: center;
+            font-family: 'Montserrat', bold;
         }
     </style>
 </head>
 <body>
     <div id="chatPopup" class="chat-popup">
         <img src="wayfinderlogo.png" alt="Wayfinder AI" class="chat-logo">
-        <div class="chat-output" id="chatOutput">Wayfinder Virtual Assistant: Hello,what do you need help with locating today?</div>
+        <div class="chat-output" id="chatOutput">Wayfinder Virtual Assistant: Hello, what do you need help with locating today?</div>
         <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
-        <button class="chat-button" onclick="sendMessage()">Send</button>
+        <button class="chat-button" onclick="sendMessage()">Send Message</button>
     </div>
 
     <script>
