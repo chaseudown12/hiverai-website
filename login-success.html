@@ -48,11 +48,13 @@
             border: 1px solid #cb5b5d;
             font-family: 'Montserrat', bold;
             color: #4e6b89;
+            text-align: left;
         }
 
         .chat-output {
             background: #f1f1f1;
             min-height: 100px;
+            text-align: left;
         }
 
         .chat-input {
@@ -78,16 +80,44 @@
 <body>
     <div id="chatPopup" class="chat-popup">
         <img src="wayfinderlogo.png" alt="Wayfinder AI" class="chat-logo">
-        <div class="chat-output" id="chatOutput">Wayfinder Virtual Assistant: Hello, what do you need help with locating today?</div>
+        <div class="chat-output" id="chatOutput"></div>
         <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
         <button class="chat-button" onclick="sendMessage()">Send Message</button>
     </div>
 
     <script>
+        const questions = [
+            "Is your company currently in compliance with ISNetworld requirements?",
+            "What is your company's ISNetworld grade?",
+            "Have you uploaded all required safety programs to ISNetworld?",
+            "Are any safety programs pending ISNetworld approval?",
+            "Do your insurance certificates meet ISNetworld requirements?",
+            "Are any of your insurance policies expiring soon?",
+            "Have you updated your company's EMR (Experience Modification Rate) in ISNetworld?",
+            "Are your OSHA 300 logs current and submitted to ISNetworld?",
+            "Has your company received any ISNetworld compliance warnings in the last 12 months?",
+            "What steps are being taken to improve your ISNetworld grade?",
+            "Does your company have an ISNetworld-compliant emergency response plan?",
+            "How often is your emergency response plan reviewed?",
+            "How do you ensure all employees are trained on emergency procedures?",
+            "Are emergency drills conducted regularly?",
+            "What is the process for reporting workplace incidents?",
+            "How are incidents investigated?",
+            "Are incident reports submitted to ISNetworld promptly?",
+            "How is corrective action documented and followed up?",
+            "Do you track near-miss incidents?",
+            "How do you measure the effectiveness of corrective actions?"
+        ];
+
+        function getRandomQuestion() {
+            return questions[Math.floor(Math.random() * questions.length)];
+        }
+
         setTimeout(() => {
             let chatPopup = document.getElementById('chatPopup');
             chatPopup.style.display = 'block';
             chatPopup.style.width = '50%';
+            document.getElementById('chatOutput').innerHTML = `Wayfinder Virtual Assistant: ${getRandomQuestion()}`;
         }, 1000);
 
         function sendMessage() {
