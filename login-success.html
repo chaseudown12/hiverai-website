@@ -86,30 +86,16 @@
     </div>
 
     <script>
-        const questions = [
-            "Is your company currently in compliance with ISNetworld requirements?",
-            "What is your company's ISNetworld grade?",
-            "Have you uploaded all required safety programs to ISNetworld?",
-            "Are any safety programs pending ISNetworld approval?",
-            "Do your insurance certificates meet ISNetworld requirements?",
-            "Are any of your insurance policies expiring soon?",
-            "Have you updated your company's EMR (Experience Modification Rate) in ISNetworld?",
-            "Are your OSHA 300 logs current and submitted to ISNetworld?",
-            "Has your company received any ISNetworld compliance warnings in the last 12 months?",
-            "What steps are being taken to improve your ISNetworld grade?",
-            "Does your company have an ISNetworld-compliant emergency response plan?",
-            "How often is your emergency response plan reviewed?",
-            "How do you ensure all employees are trained on emergency procedures?",
-            "Are emergency drills conducted regularly?",
-            "What is the process for reporting workplace incidents?",
-            "How are incidents investigated?",
-            "Are incident reports submitted to ISNetworld promptly?",
-            "How is corrective action documented and followed up?",
-            "Do you track near-miss incidents?",
-            "How do you measure the effectiveness of corrective actions?"
-        ];
+        const qaPairs = {
+            "What is your company's ISNetworld grade?": "Your company's ISNetworld grade is based on safety performance and compliance with ISN requirements.",
+            "Have you uploaded all required safety programs to ISNetworld?": "You can check your ISNetworld account to see if all required safety programs are uploaded.",
+            "Are any safety programs pending ISNetworld approval?": "You can verify approval status under the safety programs section in ISNetworld.",
+            "Do your insurance certificates meet ISNetworld requirements?": "Ensure your insurance certificates match ISNetworld’s latest requirements to avoid compliance issues.",
+            "What is the process for reporting workplace incidents?": "Workplace incidents should be reported via ISNetworld’s incident tracking system as per regulatory requirements."
+        };
 
         function getRandomQuestion() {
+            const questions = Object.keys(qaPairs);
             return questions[Math.floor(Math.random() * questions.length)];
         }
 
@@ -117,15 +103,19 @@
             let chatPopup = document.getElementById('chatPopup');
             chatPopup.style.display = 'block';
             chatPopup.style.width = '50%';
-            document.getElementById('chatOutput').innerHTML = `Wayfinder Virtual Assistant: ${getRandomQuestion()}`;
+            let randomQuestion = getRandomQuestion();
+            document.getElementById('chatOutput').innerHTML = `Wayfinder Virtual Assistant: ${randomQuestion}`;
         }, 1000);
 
         function sendMessage() {
             let inputBox = document.getElementById('chatInput');
             let outputBox = document.getElementById('chatOutput');
-            let userMessage = inputBox.value;
-            if (userMessage.trim() !== '') {
-                outputBox.innerHTML += '<br><strong>User:</strong> ' + userMessage;
+            let userMessage = inputBox.value.trim();
+
+            if (userMessage !== '') {
+                outputBox.innerHTML += `<br><strong>User:</strong> ${userMessage}`;
+                let response = qaPairs[userMessage] || "I'm sorry, I don't have an answer for that question right now.";
+                outputBox.innerHTML += `<br><strong>Wayfinder Virtual Assistant:</strong> ${response}`;
                 inputBox.value = '';
             }
         }
