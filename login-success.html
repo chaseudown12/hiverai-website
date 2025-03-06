@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Page with Chatbot Mk1</title>
+    <title>Site Page</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
         
@@ -12,15 +12,15 @@
             padding: 0;
             background: url('isnetworld.png') no-repeat center center fixed;
             background-size: cover;
-            font-family: 'Montserrat', bold;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: bold;
         }
 
         .chat-popup {
             position: fixed;
             bottom: 0;
             left: 0;
-            width: 0;
-            height: auto;
+            width: 50%;
             max-width: 50%;
             background: white;
             border: 5px solid #cb5b5d;
@@ -28,52 +28,26 @@
             overflow: hidden;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
             padding: 20px;
-            display: none;
+            display: block;
             transition: width 1s ease-in-out;
             text-align: center;
         }
 
-        .chat-logo {
-            display: block;
-            margin: 0 auto;
-            width: 40%;
-            height: auto;
+        @media (max-width: 768px) {
+            .chat-popup {
+                width: 90%;
+            }
         }
 
-        .chat-output, .chat-input {
+        .chat-input {
             width: calc(100% - 20px);
             margin: 10px auto;
             padding: 10px;
             border-radius: 10px;
-            border: 5px solid #cb5b5d;
-            font-family: 'Montserrat', bold;
-            color: #4e6b89;
-            text-align: left;
-        }
-
-        .chat-output {
-            background: #f1f1f1;
-            min-height: 100px;
-            text-align: left;
-        }
-
-        .chat-input {
+            border: 1px solid #cb5b5d;
+            font-family: 'Montserrat', sans-serif;
             background: #ffffff;
             min-height: 40px;
-        }
-
-        .chat-button {
-            display: block;
-            width: 25%;
-            margin: 10px auto;
-            padding: 10px;
-            background: #cb5b5d;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            text-align: center;
-            font-family: 'Montserrat', bold;
         }
     </style>
 </head>
@@ -81,44 +55,59 @@
     <div id="chatPopup" class="chat-popup">
         <img src="wayfinderlogo.png" alt="Wayfinder AI" class="chat-logo">
         <div class="chat-output" id="chatOutput"></div>
-        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
-        <button class="chat-button" onclick="sendMessage()">Send Message</button>
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..."
+               autocomplete="off" autocorrect="off" spellcheck="false">
+        <button class="chat-button" onclick="processChat()">Send Message</button>
     </div>
 
     <script>
-        const qaPairs = {
-            "What is your company's ISNetworld grade?": "Your company's ISNetworld grade is based on safety performance and compliance with ISN requirements.",
-            "Have you uploaded all required safety programs to ISNetworld?": "You can check your ISNetworld account to see if all required safety programs are uploaded.",
-            "Are any safety programs pending ISNetworld approval?": "You can verify approval status under the safety programs section in ISNetworld.",
-            "Do your insurance certificates meet ISNetworld requirements?": "Ensure your insurance certificates match ISNetworld’s latest requirements to avoid compliance issues.",
-            "What is the process for reporting workplace incidents?": "Workplace incidents should be reported via ISNetworld’s incident tracking system as per regulatory requirements."
-        };
+        let steps = [
+            "WayFinder: Are you ready to get started with getting your ISNetworld safety topics approved?",
+            "WayFinder: Sorry, I forgot to introduce myself. I am WayFinder, your virtual assistant, here to guide you through the process of getting your safety topics into ISNetworld and approved. Are you ready to continue? yes or no?",
+            "WayFinder: If you haven't done so already, log into your account on ISNetworld. Let me know when you are ready to continue by typing yes into your message box.",
+            "WayFinder: Since this is your first time using the Owyn Safety site, I'll need you to add some review company information. Please review your information to the right and make any updates that are needed. If everything looks correct, click submit on the form and type yes into the message box to move on.[POP UP WINDOW UNDER DEVELOPMENT]",
+            "WayFinder: WAYFINDER OUTPUT NOT DEVELOPED. To proceed, please type no into your message box."
+        ];
+        
+        let noResponse = "WayFinder: Ok, thank you for chatting with me. If you need help later, let me know!";
+        let stepIndex = 0;
 
-        function getRandomQuestion() {
-            const questions = Object.keys(qaPairs);
-            return questions[Math.floor(Math.random() * questions.length)];
-        }
-
-        setTimeout(() => {
-            let chatPopup = document.getElementById('chatPopup');
-            chatPopup.style.display = 'block';
-            chatPopup.style.width = '50%';
-            let randomQuestion = getRandomQuestion();
-            document.getElementById('chatOutput').innerHTML = `Wayfinder Virtual Assistant: ${randomQuestion}`;
-        }, 1000);
-
-        function sendMessage() {
-            let inputBox = document.getElementById('chatInput');
-            let outputBox = document.getElementById('chatOutput');
-            let userMessage = inputBox.value.trim();
-
-            if (userMessage !== '') {
-                outputBox.innerHTML += `<br><strong>User:</strong> ${userMessage}`;
-                let response = qaPairs[userMessage] || "I'm sorry, I don't have an answer for that question right now.";
-                outputBox.innerHTML += `<br><strong>Wayfinder Virtual Assistant:</strong> ${response}`;
-                inputBox.value = '';
+        function processChat() {
+            let userInput = document.getElementById("chatInput").value.trim().toLowerCase();
+            let chatOutput = document.getElementById("chatOutput");
+            
+            if (userInput === "yes") {
+                stepIndex++;
+                if (stepIndex < steps.length) {
+                    chatOutput.innerHTML += "<p>" + steps[stepIndex] + "</p>";
+                } else {
+                    chatOutput.innerHTML += "<p>WayFinder: Great! You have completed all steps successfully.</p>";
+                }
+            } else if (userInput === "no") {
+                chatOutput.innerHTML += "<p>" + noResponse + "</p>";
+                stepIndex = 0;
             }
+            
+            document.getElementById("chatInput").value = "";
+            chatOutput.scrollTop = chatOutput.scrollHeight; // Auto-scroll to latest message
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            let chatInput = document.getElementById("chatInput");
+            chatInput.setAttribute("autocomplete", "off");
+            chatInput.setAttribute("autocorrect", "off");
+            chatInput.setAttribute("spellcheck", "false");
+
+            chatInput.addEventListener("focus", function() {
+                setTimeout(() => {
+                    chatInput.setAttribute("type", "text");
+                }, 100);
+            });
+
+            let chatOutput = document.getElementById("chatOutput");
+            chatOutput.innerHTML = "<p>" + steps[0] + "</p>";
+        });
     </script>
 </body>
 </html>
+
