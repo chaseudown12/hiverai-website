@@ -61,52 +61,54 @@
     </div>
 
     <script>
-        let steps = [
-            "WayFinder: Are you ready to get started with getting your ISNetworld safety topics approved? please type yes or now into the message box.",
-            "WayFinder: Sorry, I forgot to introduce myself. I am WayFinder, your virtual assistant, here to guide you through the process of getting your safety topics into ISNetworld and approved. Are you ready to continue? yes or no?",
-            "WayFinder: If you haven't done so already, log into your account on ISNetworld. Let me know when you are ready to continue by typing yes into your message box.",
-            "WayFinder: Since this is your first time using the Owyn Safety site, I'll need you to double check your company information. is your Company Name OWYN safety Managment? type yes if its correct.",
-            "WayFinder: WAYFINDER OUTPUT NOT DEVELOPED. To proceed, please type no into your message box."
-        ];
-        
-        let noResponse = "WayFinder: Ok, thank you for chatting with me. If you need help later, let me know!";
-        let stepIndex = 0;
+    let steps = [
+        "WayFinder: Are you ready to get started with getting your ISNetworld safety topics approved? Please type yes or no into the message box.",
+        "WayFinder: Sorry, I forgot to introduce myself. I am WayFinder, your virtual assistant, here to guide you through the process of getting your safety topics into ISNetworld and approved. Are you ready to continue? yes or no?",
+        "WayFinder: If you haven't done so already, log into your account on ISNetworld. Let me know when you are ready to continue by typing yes into your message box.",
+        "WayFinder: Since this is your first time using the Owyn Safety site, I'll need you to double-check your company information. Is your Company Name OWYN Safety Management? Type yes if it's correct.",
+        "WayFinder: WAYFINDER OUTPUT NOT DEVELOPED. To proceed, please type no into your message box."
+    ];
+    
+    let endMessage = "WayFinder: Thanks for chatting with me. If there is anything else you need, let me know.";
+    let stepIndex = 0;
 
-        function processChat() {
-            let userInput = document.getElementById("chatInput").value.trim().toLowerCase();
-            let chatOutput = document.getElementById("chatOutput");
-            
-            if (userInput === "yes") {
-                stepIndex++;
-                if (stepIndex < steps.length) {
-                    chatOutput.innerHTML += "<p>" + steps[stepIndex] + "</p>";
-                } else {
-                    chatOutput.innerHTML += "<p>WayFinder: Great! You have completed all steps successfully.</p>";
-                }
-            } else if (userInput === "no") {
-                chatOutput.innerHTML += "<p>" + noResponse + "</p>";
-                stepIndex = 0;
+    function processChat() {
+        let userInput = document.getElementById("chatInput").value.trim().toLowerCase();
+        let chatOutput = document.getElementById("chatOutput");
+
+        if (userInput === "yes") {
+            stepIndex++;
+            if (stepIndex < steps.length) {
+                chatOutput.innerHTML += "<p>" + steps[stepIndex] + "</p>";
+            } else {
+                chatOutput.innerHTML += "<p>WayFinder: Great! You have completed all steps successfully.</p>";
             }
-            
-            document.getElementById("chatInput").value = "";
-            chatOutput.scrollTop = chatOutput.scrollHeight; // Auto-scroll to latest message
+        } else if (userInput === "no") {
+            chatOutput.innerHTML += "<p>" + endMessage + "</p>";
+            document.getElementById("chatInput").disabled = true;
+            document.querySelector(".chat-button").disabled = true;
+            return;
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            let chatInput = document.getElementById("chatInput");
-            chatInput.setAttribute("autocomplete", "off");
-            chatInput.setAttribute("autocorrect", "off");
-            chatInput.setAttribute("spellcheck", "false");
+        document.getElementById("chatInput").value = "";
+        chatOutput.scrollTop = chatOutput.scrollHeight; // Auto-scroll to latest message
+    }
 
-            chatInput.addEventListener("focus", function() {
-                setTimeout(() => {
-                    chatInput.setAttribute("type", "text");
-                }, 100);
-            });
+    document.addEventListener("DOMContentLoaded", function() {
+        let chatInput = document.getElementById("chatInput");
+        chatInput.setAttribute("autocomplete", "off");
+        chatInput.setAttribute("autocorrect", "off");
+        chatInput.setAttribute("spellcheck", "false");
 
-            let chatOutput = document.getElementById("chatOutput");
-            chatOutput.innerHTML = "<p>" + steps[0] + "</p>";
+        chatInput.addEventListener("focus", function() {
+            setTimeout(() => {
+                chatInput.setAttribute("type", "text");
+            }, 100);
         });
+
+        let chatOutput = document.getElementById("chatOutput");
+        chatOutput.innerHTML = "<p>" + steps[0] + "</p>";
+    });      
     </script>
 </body>
 </html>
