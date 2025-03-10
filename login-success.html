@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Page with OpenAI Chatbot</title>
+    <title>Site Page</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
         
@@ -49,13 +49,6 @@
             background: #ffffff;
             min-height: 40px;
         }
-
-        .chat-output {
-            height: 200px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-            text-align: left;
-        }
     </style>
 </head>
 <body>
@@ -68,41 +61,72 @@
     </div>
 
     <script>
-        function processChat() {
-            let userInput = document.getElementById("chatInput").value.trim();
-            let chatOutput = document.getElementById("chatOutput");
+    let steps = [
+        "WayFinder: Are you ready to get started with getting your ISNetworld safety topics approved? Please type yes or no into the message box.",
+        "WayFinder: Sorry, I forgot to introduce myself. I am WayFinder, your virtual safety assistant. I am here to guide you through the process of getting your safety topics uploaded into ISNetworld and approved. Are you ready to continue? yes or no?",
+        "WayFinder: If you haven't done so already, log into your account on ISNetworld. Let me know when you are ready to continue by typing yes into your message box. Don't rush, I will be here when you are ready",
+        "WayFinder: Since this is your first time using the site, I'll need you to double-check your company information. Is your Company Name OWYZ Safety Management? Type yes if it's correct.",
+        "WayFinder: OK-now that we have your company name verified we can start downloading only what you need for ISNetworld safety documents.", 
+    ];
 
-            chatOutput.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
+    let endMessage = "WayFinder: Thanks for chatting with me. If there is anything else you need, let me know.";
+    let stepIndex = 0;
+    let updatingCompanyName = false;
+    let companyName = "OWYZ Safety Management";
+    let awaitingSafetyTopic = false;
 
-            fetch("https://api.openai.com/v1/chat/completions", {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer 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"
-                },
-                body: JSON.stringify({
-                    model: "gpt-4",
-                    messages: [{ role: "user", content: userInput }],
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const reply = data.choices[0].message.content;
-                let chatOutput = document.getElementById("chatOutput");
-                chatOutput.innerHTML += `<p><strong>WayFinder:</strong> ${reply}</p>`;
-                document.getElementById("chatInput").value = "";
-                chatOutput.scrollTop = chatOutput.scrollHeight;
-            })
-            .catch(error => {
-                console.error('Oops, your API broke:', error);
-                chatOutput.innerHTML += `<p><strong>WayFinder:</strong> Something went wrong—probably your fault. Try again.</p>`;
-            });
+    function processChat() {
+        let userInput = document.getElementById("chatInput").value.trim();
+        let chatOutput = document.getElementById("chatOutput");
+
+        if (updatingCompanyName) {
+            companyName = userInput;
+            chatOutput.innerHTML += `<p>WayFinder: I have updated your company name to "${companyName}". Is this correct? Type yes or no.</p>`;
+            updatingCompanyName = false;
+            return;
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            let chatOutput = document.getElementById("chatOutput");
-            chatOutput.innerHTML = `<p><strong>WayFinder:</strong> Hey! Go ahead and ask me something.</p>`;
-        });
+        if (awaitingSafetyTopic) {
+            chatOutput.innerHTML += `<p>WayFinder: Thank you! We will start preparing the topic "${userInput}" for you.</p>`;
+            awaitingSafetyTopic = false;
+            return;
+        }
+
+        if (userInput.toLowerCase() === "yes") {
+            stepIndex++;
+            if (stepIndex < steps.length) {
+                chatOutput.innerHTML += `<p>${steps[stepIndex]}</p>`;
+            } else {
+                chatOutput.innerHTML += `<p>WayFinder: Great! You have completed all steps successfully.</p>`;
+            }
+            
+            if (stepIndex === 4) {
+                awaitingSafetyTopic = true;
+                chatOutput.innerHTML += `<p>WayFinder: Please list one of the safety topics you need, and we will start preparing it for you.</p>`;
+            }
+        } else if (userInput.toLowerCase() === "no") {
+            if (stepIndex === 3) { // Company name verification step
+                chatOutput.innerHTML += "<p>WayFinder: Not a problem. Please type in the name of your company and I will update our database.</p>";
+                updatingCompanyName = true;
+            } else if (stepIndex === 4) { // Confirming updated company name
+                chatOutput.innerHTML += "<p>WayFinder: Let's try again. Please enter your company name.</p>";
+                updatingCompanyName = true;
+            } else {
+                chatOutput.innerHTML += `<p>${endMessage}</p>`;
+                document.getElementById("chatInput").disabled = true;
+                document.querySelector(".chat-button").disabled = true;
+                return;
+            }
+        }
+        
+        document.getElementById("chatInput").value = "";
+        chatOutput.scrollTop = chatOutput.scrollHeight; // Auto-scroll to latest message
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        let chatOutput = document.getElementById("chatOutput");
+        chatOutput.innerHTML = `<p>${steps[0]}</p>`;
+    });      
     </script>
 </body>
 </html>
