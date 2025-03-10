@@ -3,130 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Page</title>
+    <title>Wayfinder AI</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
-        
+        * {
+            box-sizing: border-box;
+        }
         body {
+            background-color: #000;
+            font-family: 'Courier New', Courier, monospace;
+            color: #00FF00;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
             margin: 0;
-            padding: 0;
-            background: url('isnetworld.png') no-repeat center center fixed;
-            background-size: cover;
-            font-family: 'Montserrat', sans-serif;
+        }
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        #chat-output {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .input-container {
+            display: flex;
+            padding: 10px;
+        }
+        #user-input {
+            flex: 1;
+            padding: 10px;
+            background-color: #2c2c2c;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        #send-btn {
+            padding: 10px;
+            border: none;
+            background-color: #008000;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
             font-weight: bold;
         }
-
-        .chat-popup {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 50%;
-            max-width: 50%;
-            background: white;
-            border: 5px solid #cb5b5d;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            display: block;
-            transition: width 1s ease-in-out;
-            text-align: center;
-        }
-
-        @media (max-width: 768px) {
-            .chat-popup {
-                width: 90%;
-            }
-        }
-
-        .chat-input {
-            width: calc(100% - 20px);
-            margin: 10px auto;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #cb5b5d;
-            font-family: 'Montserrat', sans-serif;
-            background: #ffffff;
-            min-height: 40px;
-        }
+        #send-btn:hover { opacity: 0.8; }
     </style>
 </head>
 <body>
-    <div id="chatPopup" class="chat-popup">
-        <img src="wayfinderlogo.png" alt="Wayfinder AI" class="chat-logo">
-        <div class="chat-output" id="chatOutput"></div>
-        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..."
-               autocomplete="off" autocorrect="off" spellcheck="false">
-        <button class="chat-button" onclick="processChat()">Send Message</button>
+    <div class="chat-container">
+        <div id="chat-output"></div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Enter your response..." autocomplete="off">
+            <button id="send-btn">Send</button>
+        </div>
     </div>
 
     <script>
-    let steps = [
-        "WayFinder: Are you ready to get started with getting your ISNetworld safety topics approved? Please type yes or no into the message box.",
-        "WayFinder: Sorry, I forgot to introduce myself. I am WayFinder, your virtual safety assistant. I am here to guide you through the process of getting your safety topics uploaded into ISNetworld and approved. Are you ready to continue? yes or no?",
-        "WayFinder: If you haven't done so already, log into your account on ISNetworld. Let me know when you are ready to continue by typing yes into your message box. Don't rush, I will be here when you are ready",
-        "WayFinder: Since this is your first time using the site, I'll need you to double-check your company information. Is your Company Name OWYZ Safety Management? Type yes if it's correct.",
-        "WayFinder: OK-now that we have your company name verified we can start downloading only what you need for ISNetworld safety documents.", 
-    ];
+        let userName = '';
+        let step = 0;
 
-    let endMessage = "WayFinder: Thanks for chatting with me. If there is anything else you need, let me know.";
-    let stepIndex = 0;
-    let updatingCompanyName = false;
-    let companyName = "OWYZ Safety Management";
-    let awaitingSafetyTopic = false;
+        window.onload = () => {
+            appendMessage('WayFinder', "Greetings! I'm WayFinder. And whom do I have the pleasure of speaking with today?");
+        };
 
-    function processChat() {
-        let userInput = document.getElementById("chatInput").value.trim();
-        let chatOutput = document.getElementById("chatOutput");
+        document.getElementById('send-btn').onclick = sendMessage;
+        document.getElementById('user-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') sendMessage();
+        });
 
-        if (updatingCompanyName) {
-            companyName = userInput;
-            chatOutput.innerHTML += `<p>WayFinder: I have updated your company name to "${companyName}". Is this correct? Type yes or no.</p>`;
-            updatingCompanyName = false;
-            return;
-        }
+        function sendMessage() {
+            const inputField = document.getElementById('user-input');
+            const message = inputField.value.trim();
+            if (!message) return;
 
-        if (awaitingSafetyTopic) {
-            chatOutput.innerHTML += `<p>WayFinder: Thank you! We will start preparing the topic "${userInput}" for you.</p>`;
-            awaitingSafetyTopic = false;
-            return;
-        }
+            appendMessage('User', message);
 
-        if (userInput.toLowerCase() === "yes") {
-            stepIndex++;
-            if (stepIndex < steps.length) {
-                chatOutput.innerHTML += `<p>${steps[stepIndex]}</p>`;
+            if (step === 0) {
+                userName = message;
+                appendMessage('WayFinder', `Pleasure to meet you, ${userName}. Are you here for help with your ISNetworld RAVS written topics or to update your company name?`);
+                step++;
+            } else if (step === 1) {
+                if (message.toLowerCase().includes('ravs')) {
+                    appendMessage('WayFinder', `Ok, let's get started reviewing all your needs first. What exactly is a RAVS written topic, you may ask? RAVS (Review and Verification Services) written topics are documents required by ISNetworld to verify a company's compliance with specific safety and regulatory standards.`);
+                    step++;
+                } else if (message.toLowerCase().includes('company')) {
+                    appendMessage('WayFinder', `Understood, ${userName}. Let's proceed to update your company name. What is your new company name?`);
+                    step++;
+                } else {
+                    appendMessage('WayFinder', 'I didn\'t quite catch that. Are you looking for help with ISNetworld RAVS topics or updating your company name?');
+                }
             } else {
-                chatOutput.innerHTML += `<p>WayFinder: Great! You have completed all steps successfully.</p>`;
+                appendMessage('WayFinder', 'How else may I assist you today?');
             }
-            
-            if (stepIndex === 4) {
-                awaitingSafetyTopic = true;
-                chatOutput.innerHTML += `<p>WayFinder: Please list one of the safety topics you need, and we will start preparing it for you.</p>`;
-            }
-        } else if (userInput.toLowerCase() === "no") {
-            if (stepIndex === 3) { // Company name verification step
-                chatOutput.innerHTML += "<p>WayFinder: Not a problem. Please type in the name of your company and I will update our database.</p>";
-                updatingCompanyName = true;
-            } else if (stepIndex === 4) { // Confirming updated company name
-                chatOutput.innerHTML += "<p>WayFinder: Let's try again. Please enter your company name.</p>";
-                updatingCompanyName = true;
-            } else {
-                chatOutput.innerHTML += `<p>${endMessage}</p>`;
-                document.getElementById("chatInput").disabled = true;
-                document.querySelector(".chat-button").disabled = true;
-                return;
-            }
-        }
-        
-        document.getElementById("chatInput").value = "";
-        chatOutput.scrollTop = chatOutput.scrollHeight; // Auto-scroll to latest message
-    }
 
-    document.addEventListener("DOMContentLoaded", function() {
-        let chatOutput = document.getElementById("chatOutput");
-        chatOutput.innerHTML = `<p>${steps[0]}</p>`;
-    });      
+            inputField.value = '';
+            document.getElementById('chat-output').scrollTop = document.getElementById('chat-output').scrollHeight;
+        }
+
+        function appendMessage(sender, text) {
+            const output = document.getElementById('chat-output');
+            const messageElem = document.createElement('div');
+            messageElem.innerHTML = `<strong>${sender}:</strong> ${text}`;
+            output.appendChild(messageElem);
+        }
     </script>
 </body>
 </html>
