@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wayfinder AI</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
         body {
             background-color: #000;
             font-family: 'Courier New', Courier, monospace;
@@ -65,6 +63,8 @@
     <script>
         let userName = '';
         let step = 0;
+        let misunderstandingCount = 0;
+        let companyName = 'OWZN Safety Equipment';
 
         window.onload = () => {
             appendMessage('WayFinder', "Greetings! I'm WayFinder. And whom do I have the pleasure of speaking with today?");
@@ -85,23 +85,68 @@
             if (step === 0) {
                 userName = message;
                 appendMessage('WayFinder', `Pleasure to meet you, ${userName}. Are you here for help with your ISNetworld RAVS written topics or to update your company name?`);
-                step++;
+                step = 1;
+                misunderstandingCount = 0;
             } else if (step === 1) {
                 if (message.toLowerCase().includes('ravs')) {
-                    appendMessage('WayFinder', `Ok, let's get started reviewing all your needs first. What exactly is a RAVS written topic, you may ask? RAVS (Review and Verification Services) written topics are documents required by ISNetworld to verify a company's compliance with specific safety and regulatory standards.`);
-                    step++;
+                    appendMessage('WayFinder', `Ok, let's get started reviewing your ISNetworld RAVS written topics. RAVS (Review and Verification Services) written topics are documents required by ISNetworld to verify a company's compliance with specific safety and regulatory standards.`);
+                    step = 2;
+                    misunderstandingCount = 0;
                 } else if (message.toLowerCase().includes('company')) {
-                    appendMessage('WayFinder', `Understood, ${userName}. Let's proceed to update your company name. What is your new company name?`);
-                    step++;
+                    appendMessage('WayFinder', `Ok, is your company name ${companyName}?`);
+                    step = 3;
+                    misunderstandingCount = 0;
                 } else {
-                    appendMessage('WayFinder', 'I didn\'t quite catch that. Are you looking for help with ISNetworld RAVS topics or updating your company name?');
+                    handleMisunderstanding();
+                }
+            } else if (step === 3) {
+                if (message.toLowerCase().includes('yes')) {
+                    appendMessage('WayFinder', `OK—great, because if they don't match, ISNetworld will reject them. Let's check your ISNetworld account to make sure they match. Please go to this website: <a href=\"https://www.isnetworld.com/en/login\" target=\"_blank\">https://www.isnetworld.com/en/login</a>. When you're done let me know.`);
+                    misunderstandingCount = 0;
+                } else if (message.toLowerCase().includes('no')) {
+                    appendMessage('WayFinder', 'Let\'s update your company name so it matches what ISNetworld has on record. Please tell me your new company name below:');
+                    step = 4;
+                    misunderstandingCount = 0;
+                } else {
+                    handleMisunderstanding();
+                }
+            } else if (step === 4) {
+                companyName = message;
+                appendMessage('WayFinder', `I have ${companyName} now, is that correct?`);
+                step = 5;
+                misunderstandingCount = 0;
+            } else if (step === 5) {
+                if (message.toLowerCase().includes('yes')) {
+                    appendMessage('WayFinder', `Excellent! Your company name has been updated to ${companyName}. Remember to update this in ISNetworld as well. Let me know if you need anything else.`);
+                    step = 1;
+                    misunderstandingCount = 0;
+                } else if (message.toLowerCase().includes('no')) {
+                    appendMessage('WayFinder', 'No worries, please tell me your correct company name again:');
+                    step = 4;
+                    misunderstandingCount = 0;
+                } else {
+                    handleMisunderstanding();
                 }
             } else {
-                appendMessage('WayFinder', 'How else may I assist you today?');
+                handleMisunderstanding();
             }
 
             inputField.value = '';
             document.getElementById('chat-output').scrollTop = document.getElementById('chat-output').scrollHeight;
+        }
+
+        function handleMisunderstanding() {
+            misunderstandingCount++;
+            if (misunderstandingCount >= 3) {
+                appendMessage('WayFinder', 'Sorry, I think I am broken. Let me gather my thoughts and start over.');
+                step = 0;
+                misunderstandingCount = 0;
+                setTimeout(() => {
+                    appendMessage('WayFinder', "Greetings! I'm WayFinder. And whom do I have the pleasure of speaking with today?");
+                }, 1500);
+            } else {
+                appendMessage('WayFinder', 'I didn\'t quite catch that, could you please clarify?');
+            }
         }
 
         function appendMessage(sender, text) {
