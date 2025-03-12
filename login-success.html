@@ -3,158 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wayfinder AI</title>
+    <title>Wayfinder First Timer's Club</title>
+    <link href="https://fonts.cdnfonts.com/css/neo-sans" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; }
         body {
-            background-color: #000;
-            font-family: 'Courier New', Courier, monospace;
-            color: #00FF00;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+            background-color: darknavyblue;
             margin: 0;
+            padding: 0;
+            font-family: 'Neo Sans', sans-serif;
         }
-        .chat-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
+
+        #chat-popup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50%;
+            max-height: 50%;
+            background: black;
+            padding: 25px;
+            border-radius: 7px;
             overflow-y: auto;
+            color: green;
+            display: none;
+            z-index: 999;
         }
-        #chat-output {
-            flex: 1;
-            overflow-y: auto;
-        }
-        .input-container {
-            display: flex;
-            padding: 10px;
-        }
-        #user-input {
-            flex: 1;
-            padding: 10px;
-            background-color: #2c2c2c;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        #send-btn {
-            padding: 10px;
-            border: none;
-            background-color: #008000;
+
+        .user-btn {
+            background-color: darkgreen;
             color: white;
-            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 7px;
+            border: none;
             cursor: pointer;
-            font-weight: bold;
+            font-family: 'Neo Sans', sans-serif;
         }
-        #send-btn:hover { opacity: 0.8; }
+
+        #close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        #open-chat-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px;
+            background: darkgreen;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div id="chat-output"></div>
-        <div class="input-container">
-            <input type="text" id="user-input" placeholder="Enter your response..." autocomplete="off">
-            <button id="send-btn">Send</button>
-        </div>
-    </div>
 
-    <script>
-        let userName = '';
-        let step = 0;
-        let misunderstandingCount = 0;
-        let companyName = 'OWZN Safety Equipment';
+<button id="open-chat-btn">Open WayFinder</button>
 
-        window.onload = () => {
-            appendMessage('WayFinder', "Greetings! I'm WayFinder. And whom do I have the pleasure of speaking with today?");
-        };
+<div id="chat-popup">
+    <button id="close-btn">X</button>
+    <div id="chat-content"></div>
+</div>
 
-        document.getElementById('send-btn').onclick = sendMessage;
-        document.getElementById('user-input').addEventListener('keydown', e => {
-            if (e.key === 'Enter') sendMessage();
-        });
+<script>
+    let userName = '';
+    let currentStatement = 1;
 
-        function sendMessage() {
-            const inputField = document.getElementById('user-input');
-            const message = inputField.value.trim();
-            if (!message) return;
+    const statements = {
+        1: `Are you ready to get started getting your ISNetworld Safety Topics Approved?<br>What is your name?<br><button class="user-btn" onclick="submitName()">Submit Name</button><button class="user-btn" onclick="navigate(2)">Move Forward</button>`,
+        2: () => `Hello ${userName}, I am WayFinder your virtual assistant here to guide you through the process of getting your safety topics into ISNetworld and approved. I'll help you avoid common mistakes and questions along the way. 😂<br><button class="user-btn" onclick="navigate(1)">Go Back</button><button class="user-btn" onclick="navigate(3)">Move Forward</button>`,
+        3: `Now that the introductions are over let's start. Go ahead and log into ISNetworld and go to the RAVS written programs section. 😂<br><button class="user-btn" onclick="navigate(2)">Go Back</button><button class="user-btn" onclick="navigate(4)">Move Forward</button>`,
+        4: `Since this is your first time using the OWYN Safety Management site, add some additional information then click submit.<br><button class="user-btn" onclick="navigate(3)">Go Back</button><button class="user-btn" onclick="navigate(7)">Move Forward</button>`,
+        7: `We need to make sure your company name matches your ISNetworld account.<br><button class="user-btn" onclick="navigate(4)">Go Back</button><button class="user-btn" onclick="alert('Check Company Name coming soon!')">Check Company Name</button><button class="user-btn" onclick="navigate(8)">Move Forward</button>`,
+        8: `Download your ISNetworld answer key.<br><button class="user-btn" onclick="navigate(7)">Go Back</button><button class="user-btn" onclick="alert('Download Answer Key coming soon!')">Download Answer Key</button><button class="user-btn" onclick="navigate(9)">Move Forward</button>`,
+        9: `Find your documents, then click ready to move on.<br><button class="user-btn" onclick="navigate(8)">Go Back</button><button class="user-btn" onclick="alert('Safety topic page link coming soon!')">Go to Safety Topics Page</button><button class="user-btn" onclick="navigate(10)">Move Forward</button>`,
+        10: `Use the ISNetworld Safety Topic Upload Cheat Sheet to upload information.<br><button class="user-btn" onclick="navigate(9)">Go Back</button><button class="user-btn" onclick="navigate(11)">Move Forward</button>`,
+        11: `Congratulations. I knew you could do it! See you next time.<br><button class="user-btn" onclick="endChat()">End Chat</button>`
+    };
 
-            appendMessage('User', message);
+    document.getElementById('open-chat-btn').onclick = () => {
+        document.getElementById('chat-popup').style.display = 'block';
+        navigate(1);
+    };
 
-            if (step === 0) {
-                userName = message;
-                appendMessage('WayFinder', `Pleasure to meet you, ${userName}. Are you here for help with your ISNetworld RAVS written topics or to update your company name?`);
-                step = 1;
-                misunderstandingCount = 0;
-            } else if (step === 1) {
-                if (message.toLowerCase().includes('ravs')) {
-                    appendMessage('WayFinder', `Ok, let's get started reviewing your ISNetworld RAVS written topics. RAVS (Review and Verification Services) written topics are documents required by ISNetworld to verify a company's compliance with specific safety and regulatory standards.`);
-                    step = 2;
-                    misunderstandingCount = 0;
-                } else if (message.toLowerCase().includes('company')) {
-                    appendMessage('WayFinder', `Ok, is your company name ${companyName}?`);
-                    step = 3;
-                    misunderstandingCount = 0;
-                } else {
-                    handleMisunderstanding();
-                }
-            } else if (step === 3) {
-                if (message.toLowerCase().includes('yes')) {
-                    appendMessage('WayFinder', `OK—great, because if they don't match, ISNetworld will reject them. Let's check your ISNetworld account to make sure they match. Please go to this website: <a href=\"https://www.isnetworld.com/en/login\" target=\"_blank\">https://www.isnetworld.com/en/login</a>. When you're done let me know.`);
-                    misunderstandingCount = 0;
-                } else if (message.toLowerCase().includes('no')) {
-                    appendMessage('WayFinder', 'Let\'s update your company name so it matches what ISNetworld has on record. Please tell me your new company name below:');
-                    step = 4;
-                    misunderstandingCount = 0;
-                } else {
-                    handleMisunderstanding();
-                }
-            } else if (step === 4) {
-                companyName = message;
-                appendMessage('WayFinder', `I have ${companyName} now, is that correct?`);
-                step = 5;
-                misunderstandingCount = 0;
-            } else if (step === 5) {
-                if (message.toLowerCase().includes('yes')) {
-                    appendMessage('WayFinder', `Excellent! Your company name has been updated to ${companyName}. Remember to update this in ISNetworld as well. Let me know if you need anything else.`);
-                    step = 1;
-                    misunderstandingCount = 0;
-                } else if (message.toLowerCase().includes('no')) {
-                    appendMessage('WayFinder', 'No worries, please tell me your correct company name again:');
-                    step = 4;
-                    misunderstandingCount = 0;
-                } else {
-                    handleMisunderstanding();
-                }
-            } else {
-                handleMisunderstanding();
-            }
+    document.getElementById('close-btn').onclick = endChat;
 
-            inputField.value = '';
-            document.getElementById('chat-output').scrollTop = document.getElementById('chat-output').scrollHeight;
-        }
+    function submitName() {
+        userName = prompt('Please enter your name:');
+        if (userName) navigate(2);
+    }
 
-        function handleMisunderstanding() {
-            misunderstandingCount++;
-            if (misunderstandingCount >= 3) {
-                appendMessage('WayFinder', 'Sorry, I think I am broken. Let me gather my thoughts and start over.');
-                step = 0;
-                misunderstandingCount = 0;
-                setTimeout(() => {
-                    appendMessage('WayFinder', "Greetings! I'm WayFinder. And whom do I have the pleasure of speaking with today?");
-                }, 1500);
-            } else {
-                appendMessage('WayFinder', 'I didn\'t quite catch that, could you please clarify?');
-            }
-        }
+    function navigate(statement) {
+        currentStatement = statement;
+        const content = statements[statement];
+        document.getElementById('chat-content').innerHTML = typeof content === 'function' ? content() : content;
+    }
 
-        function appendMessage(sender, text) {
-            const output = document.getElementById('chat-output');
-            const messageElem = document.createElement('div');
-            messageElem.innerHTML = `<strong>${sender}:</strong> ${text}`;
-            output.appendChild(messageElem);
-        }
-    </script>
+    function endChat() {
+        document.getElementById('chat-popup').style.display = 'none';
+        currentStatement = 1;
+        userName = '';
+    }
+</script>
+
 </body>
 </html>
